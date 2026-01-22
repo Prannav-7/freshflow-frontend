@@ -21,6 +21,12 @@ import OrdersPage from './pages/admin/OrdersPage';
 import OrderDetail from './pages/OrderDetail';
 import './App.css';
 
+// Environment variable checker (development only)
+if (import.meta.env.DEV) {
+  import('./env-check.js');
+}
+
+
 function AppContent() {
   const location = useLocation();
   const hideFooter = location.pathname === '/login' || location.pathname.startsWith('/admin');
