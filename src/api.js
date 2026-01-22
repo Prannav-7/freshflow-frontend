@@ -4,7 +4,8 @@
  * This utility provides easy-to-use functions for interacting with your Firebase backend
  */
 
-const API_BASE_URL = 'http://localhost:5000';
+// Use environment variable for API URL, fallback to localhost for development
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 /**
  * Generic API call handler
