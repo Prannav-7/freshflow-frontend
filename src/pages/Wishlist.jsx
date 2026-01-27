@@ -3,12 +3,14 @@ import { Link } from 'react-router-dom';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import { Heart, ShoppingCart, Trash2 } from 'lucide-react';
+import Toast from '../components/Toast';
 import './Wishlist.css';
 
 const Wishlist = () => {
     const { wishlistItems, removeFromWishlist, clearWishlist } = useWishlist();
     const { addToCart } = useCart();
     const [selectedSizes, setSelectedSizes] = useState({});
+    const [toast, setToast] = useState(null);
 
     const handleSizeSelect = (productId, size) => {
         setSelectedSizes(prev => ({
@@ -20,12 +22,20 @@ const Wishlist = () => {
     const handleAddToCart = (product) => {
         const selectedSize = selectedSizes[product.id] || product.sizes?.[0];
         addToCart(product, 1, selectedSize);
+        setToast({
+            type: 'cart',
+            message: `${product.name} added to cart!`
+        });
         // Optionally remove from wishlist after adding to cart
         // removeFromWishlist(product.id);
     };
 
     const handleRemoveFromWishlist = (productId) => {
         removeFromWishlist(productId);
+        setToast({
+            type: 'wishlist',
+            message: 'Item removed from wishlist'
+        });
     };
 
     const handleClearWishlist = () => {
@@ -116,7 +126,7 @@ const Wishlist = () => {
                                                         className={`size-option ${selectedSize === size ? 'selected' : ''}`}
                                                         onClick={() => handleSizeSelect(product.id, size)}
                                                     >
-                                                        {size}{product.unit || 'kg'}
+                                                        {size}
                                                     </button>
                                                 ))}
                                             </div>
@@ -151,6 +161,15 @@ const Wishlist = () => {
                     </Link>
                 </div>
             </div>
+
+            {/* Toast Notification */}
+            {toast && (
+                <Toast
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={() => setToast(null)}
+                />
+            )}
         </div>
     );
 };

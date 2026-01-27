@@ -3,7 +3,9 @@ import { useState, useEffect } from 'react';
 import { products as staticProducts } from '../data/products';
 import { Star, ShoppingCart, Heart, Truck, Shield, ArrowLeft, User } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import ProductCard from '../components/ProductCard';
+import Toast from '../components/Toast';
 import { addReview, getReviews, canUserReview, getProducts } from '../api';
 
 const ProductDetail = () => {
@@ -12,9 +14,11 @@ const ProductDetail = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const { addToCart, cartItems } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState('');
+  const [toast, setToast] = useState(null);
 
   // Calculate price based on selected size
   const getCalculatedPrice = () => {
@@ -191,7 +195,10 @@ const ProductDetail = () => {
     }
 
     if (product.sizes && product.sizes.length > 0 && !selectedSize) {
-      alert('Please select a size');
+      setToast({
+        type: 'error',
+        message: 'Please select a size before adding to cart'
+      });
       return;
     }
     // Create a product object with calculated price
@@ -203,6 +210,32 @@ const ProductDetail = () => {
 
     for (let i = 0; i < quantity; i++) {
       addToCart(productWithPrice, selectedSize); // Pass product with calculated price
+    }
+
+    // Show success toast
+    setToast({
+      type: 'cart',
+      message: `${quantity} ${quantity > 1 ? 'items' : 'item'} added to cart successfully!`
+    });
+  };
+
+  const handleWishlistToggle = () => {
+    if (!product) return;
+
+    const inWishlist = isInWishlist(product.id);
+
+    if (inWishlist) {
+      removeFromWishlist(product.id);
+      setToast({
+        type: 'wishlist',
+        message: 'Removed from wishlist'
+      });
+    } else {
+      addToWishlist(product);
+      setToast({
+        type: 'wishlist',
+        message: 'Added to wishlist successfully!'
+      });
     }
   };
 
@@ -393,8 +426,11 @@ const ProductDetail = () => {
                 {isInCart ? 'Added to Cart' : 'Add to Cart'}
               </button>
 
-              <button className="wishlist-btn">
-                <Heart size={20} />
+              <button
+                className={`wishlist-btn ${isInWishlist(product.id) ? 'in-wishlist' : ''}`}
+                onClick={handleWishlistToggle}
+              >
+                <Heart size={20} fill={isInWishlist(product.id) ? 'currentColor' : 'none'} />
               </button>
             </div>
 
@@ -569,6 +605,15 @@ const ProductDetail = () => {
           </section>
         )}
       </div>
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };
