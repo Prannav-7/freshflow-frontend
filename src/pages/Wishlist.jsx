@@ -1,15 +1,25 @@
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
-import { useNavigate } from 'react-router-dom';
 import { Heart, ShoppingCart, Trash2 } from 'lucide-react';
+import './Wishlist.css';
 
 const Wishlist = () => {
-    const { wishlistItems, removeFromWishlist } = useWishlist();
+    const { wishlistItems, removeFromWishlist, clearWishlist } = useWishlist();
     const { addToCart } = useCart();
-    const navigate = useNavigate();
+    const [selectedSizes, setSelectedSizes] = useState({});
+
+    const handleSizeSelect = (productId, size) => {
+        setSelectedSizes(prev => ({
+            ...prev,
+            [productId]: size
+        }));
+    };
 
     const handleAddToCart = (product) => {
-        addToCart(product);
+        const selectedSize = selectedSizes[product.id] || product.sizes?.[0];
+        addToCart(product, 1, selectedSize);
         // Optionally remove from wishlist after adding to cart
         // removeFromWishlist(product.id);
     };
@@ -18,18 +28,23 @@ const Wishlist = () => {
         removeFromWishlist(productId);
     };
 
+    const handleClearWishlist = () => {
+        if (window.confirm('Are you sure you want to clear your entire wishlist?')) {
+            clearWishlist();
+        }
+    };
+
     if (wishlistItems.length === 0) {
         return (
-            <div className="cart-page">
+            <div className="wishlist-page">
                 <div className="container">
-                    <h1 className="page-title">My Wishlist</h1>
-                    <div className="empty-cart">
-                        <Heart size={80} color="#ccc" />
+                    <div className="wishlist-empty">
+                        <Heart size={80} className="empty-icon" />
                         <h2>Your Wishlist is Empty</h2>
-                        <p>Save your favorite products to your wishlist</p>
-                        <button onClick={() => navigate('/products')} className="continue-shopping">
+                        <p>Save your favorite items to your wishlist and shop them later!</p>
+                        <Link to="/products" className="btn-primary">
                             Browse Products
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -37,83 +52,103 @@ const Wishlist = () => {
     }
 
     return (
-        <div className="cart-page">
+        <div className="wishlist-page">
             <div className="container">
-                <h1 className="page-title">
-                    <Heart size={32} /> My Wishlist ({wishlistItems.length} items)
-                </h1>
+                <div className="wishlist-header">
+                    <h1>
+                        <Heart size={32} fill="var(--primary)" stroke="var(--primary)" />
+                        My Wishlist
+                    </h1>
+                    <div className="wishlist-header-actions">
+                        <span className="wishlist-count">{wishlistItems.length} {wishlistItems.length === 1 ? 'item' : 'items'}</span>
+                        <button onClick={handleClearWishlist} className="btn-clear">
+                            <Trash2 size={18} />
+                            Clear All
+                        </button>
+                    </div>
+                </div>
 
-                <div className="cart-content">
-                    <div className="cart-items">
-                        {wishlistItems.map((item) => (
-                            <div key={item.id} className="cart-item">
-                                <img
-                                    src={item.image}
-                                    alt={item.name}
-                                    className="cart-item-image"
-                                    onClick={() => navigate(`/product/${item.id}`)}
-                                    style={{ cursor: 'pointer' }}
-                                />
-                                <div className="cart-item-details">
-                                    <h3
-                                        className="cart-item-name"
-                                        onClick={() => navigate(`/product/${item.id}`)}
-                                        style={{ cursor: 'pointer' }}
-                                    >
-                                        {item.name}
-                                    </h3>
-                                    <p className="cart-item-category">{item.category}</p>
-                                    {item.description && (
-                                        <p className="cart-item-description">{item.description}</p>
+                <div className="wishlist-grid">
+                    {wishlistItems.map((product) => {
+                        const selectedSize = selectedSizes[product.id] || product.sizes?.[0];
+                        const priceForSize = product.prices && product.prices[selectedSize]
+                            ? product.prices[selectedSize]
+                            : product.price;
+
+                        return (
+                            <div key={product.id} className="wishlist-item">
+                                <button
+                                    className="remove-btn"
+                                    onClick={() => handleRemoveFromWishlist(product.id)}
+                                    aria-label="Remove from wishlist"
+                                >
+                                    <Heart size={20} fill="var(--primary)" stroke="var(--primary)" />
+                                </button>
+
+                                <Link to={`/product/${product.id}`} className="wishlist-item-image">
+                                    <img
+                                        src={product.image || product.imageUrl}
+                                        alt={product.name}
+                                        loading="lazy"
+                                    />
+                                </Link>
+
+                                <div className="wishlist-item-details">
+                                    <Link to={`/product/${product.id}`} className="wishlist-item-title">
+                                        <h3>{product.name}</h3>
+                                    </Link>
+
+                                    {product.description && (
+                                        <p className="wishlist-item-description">
+                                            {product.description.length > 100
+                                                ? `${product.description.substring(0, 100)}...`
+                                                : product.description}
+                                        </p>
                                     )}
-                                </div>
-                                <div className="cart-item-actions">
-                                    <div className="cart-item-price">
-                                        ₹{item.price}
-                                    </div>
-                                    <div className="wishlist-item-buttons">
+
+                                    {product.sizes && product.sizes.length > 0 && (
+                                        <div className="wishlist-item-sizes">
+                                            <label>Size:</label>
+                                            <div className="size-options">
+                                                {product.sizes.map((size) => (
+                                                    <button
+                                                        key={size}
+                                                        className={`size-option ${selectedSize === size ? 'selected' : ''}`}
+                                                        onClick={() => handleSizeSelect(product.id, size)}
+                                                    >
+                                                        {size}{product.unit || 'kg'}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="wishlist-item-footer">
+                                        <div className="wishlist-item-price">
+                                            <span className="price">₹{priceForSize}</span>
+                                            {product.originalPrice && product.originalPrice > priceForSize && (
+                                                <span className="original-price">₹{product.originalPrice}</span>
+                                            )}
+                                        </div>
+
                                         <button
-                                            onClick={() => handleAddToCart(item)}
-                                            className="add-to-cart-btn"
-                                            style={{
-                                                padding: '8px 16px',
-                                                backgroundColor: '#2ecc71',
-                                                color: 'white',
-                                                border: 'none',
-                                                borderRadius: '4px',
-                                                cursor: 'pointer',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '8px',
-                                                marginBottom: '8px'
-                                            }}
+                                            className="btn-add-to-cart"
+                                            onClick={() => handleAddToCart(product)}
                                         >
-                                            <ShoppingCart size={16} />
+                                            <ShoppingCart size={18} />
                                             Add to Cart
-                                        </button>
-                                        <button
-                                            onClick={() => handleRemoveFromWishlist(item.id)}
-                                            className="remove-btn"
-                                            style={{
-                                                padding: '8px 16px',
-                                                backgroundColor: '#e74c3c',
-                                                color: 'white',
-                                                border: 'none',
-                                                borderRadius: '4px',
-                                                cursor: 'pointer',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '8px'
-                                            }}
-                                        >
-                                            <Trash2 size={16} />
-                                            Remove
                                         </button>
                                     </div>
                                 </div>
                             </div>
-                        ))}
-                    </div>
+                        );
+                    })}
+                </div>
+
+                <div className="wishlist-actions">
+                    <Link to="/products" className="btn-secondary">
+                        Continue Shopping
+                    </Link>
                 </div>
             </div>
         </div>

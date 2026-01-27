@@ -123,9 +123,21 @@ const Checkout = () => {
                     // Don't fail the whole order if stock reduction fails
                 }
 
-                alert(`Order placed successfully! Order ID: ${result.id}\nThank you for shopping with us.`);
-                clearCart();
-                navigate('/');
+                // Show success message with Order ID and tracking option
+                const orderMessage = `✅ Order Placed Successfully!\n\n` +
+                    `Order ID: ${result.id}\n\n` +
+                    `You can track your order anytime using this Order ID.\n` +
+                    `Visit the "Track Order" page to see real-time updates.`;
+
+                if (window.confirm(orderMessage + '\n\nWould you like to track your order now?')) {
+                    // Store the order ID temporarily for auto-filling
+                    sessionStorage.setItem('trackOrderId', result.id);
+                    clearCart();
+                    navigate('/track-order');
+                } else {
+                    clearCart();
+                    navigate('/');
+                }
             } else {
                 throw new Error('Failed to save order');
             }

@@ -123,10 +123,17 @@ body {
   display: flex;
   align-items: center;
   transition: background 0.3s;
+  position: relative;
+  z-index: 10;
+  pointer-events: all;
 }
 
 .search-btn:hover {
   background: var(--primary-light);
+}
+
+.search-btn:active {
+  transform: scale(0.98);
 }
 
 .header-actions {

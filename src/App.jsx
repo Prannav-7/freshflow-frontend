@@ -9,11 +9,12 @@ import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Account from './pages/Account';
-import Wishlist from './pages/Wishlist';
 import Login from './components/Login';
 import Profile from './pages/Profile';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import TrackOrder from './pages/TrackOrder';
+import Wishlist from './pages/Wishlist';
 // Admin Pages
 import Dashboard from './pages/admin/Dashboard';
 import ProductManagement from './pages/admin/ProductManagement';
@@ -42,14 +43,15 @@ function AppContent() {
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
-          <Route path="/deals" element={<Products />} />
           <Route path="/wishlist" element={<Wishlist />} />
+          <Route path="/deals" element={<Products />} />
           <Route path="/account" element={<Account />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/orders/:id" element={<OrderDetail />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/track-order" element={<TrackOrder />} />
 
           {/* Admin Routes */}
           <Route path="/admin/dashboard" element={<Dashboard />} />

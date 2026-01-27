@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Search, Menu, User, Heart, LogOut, Package } from 'lucide-react';
+import { ShoppingCart, Search, Menu, User, Heart, LogOut, Package, MapPin } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useState, useEffect, useRef } from 'react';
@@ -154,6 +154,14 @@ const Header = ({ onSearch }) => {
                       <span>My Orders</span>
                     </button>
 
+                    <button className="dropdown-item" onClick={() => {
+                      setProfileDropdownOpen(false);
+                      navigate('/track-order');
+                    }}>
+                      <MapPin size={18} />
+                      <span>Track Order</span>
+                    </button>
+
                     <div className="dropdown-divider"></div>
 
                     <button className="dropdown-item logout-item" onClick={handleLogout}>
@@ -190,6 +198,7 @@ const Header = ({ onSearch }) => {
             <Link to="/products?category=Sweeteners" onClick={() => setMenuOpen(false)}>Natural Sweeteners</Link>
             <Link to="/about" onClick={() => setMenuOpen(false)}>About Us</Link>
             <Link to="/contact" onClick={() => setMenuOpen(false)}>Contact</Link>
+            <Link to="/track-order" className="track-order-link" onClick={() => setMenuOpen(false)}>📦 Track Order</Link>
 
             {/* Admin Dashboard Link - Only visible to admin users */}
             {user && ['psujeeth02@gmail.com', 'prannavp803@gmail.com'].includes(user.email) && (

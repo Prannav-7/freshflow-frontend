@@ -285,6 +285,20 @@ export async function changePassword(email, currentPassword, newPassword) {
     }
 }
 
+/**
+ * Track order by ID
+ * @param {string} orderId - Order ID to track
+ */
+export async function trackOrder(orderId) {
+    try {
+        const result = await apiCall(`/api/orders/track/${orderId}`);
+        return result;
+    } catch (error) {
+        console.error('Track order failed:', error);
+        return { success: false, error: error.message };
+    }
+}
+
 // ============================================
 // EXPORT ALL
 // ============================================
@@ -307,5 +321,6 @@ export default {
     canUserReview,
     updateUserProfile,
     changePassword,
+    trackOrder,
     healthCheck,
 };
