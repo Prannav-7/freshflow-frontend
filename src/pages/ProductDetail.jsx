@@ -548,7 +548,7 @@ const ProductDetail = () => {
               border: '1px solid #ffc107'
             }}>
               <p style={{ margin: 0 }}>
-                ℹ️ You must purchase this product before you can review it
+                ℹ️ You can only review this product after your order has been delivered
               </p>
             </div>
           )}

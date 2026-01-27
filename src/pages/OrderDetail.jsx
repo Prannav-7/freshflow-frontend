@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getOrders } from '../api';
-import { Package, Truck, CheckCircle, XCircle, ArrowLeft, Calendar, MapPin, Phone, Mail, User } from 'lucide-react';
+import { Package, Truck, CheckCircle, XCircle, ArrowLeft, Calendar, MapPin, Phone, Mail, User, FileText } from 'lucide-react';
+import Invoice from '../components/Invoice';
 import './OrderDetail.css';
 
 const OrderDetail = () => {
@@ -9,6 +10,7 @@ const OrderDetail = () => {
     const navigate = useNavigate();
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [showInvoice, setShowInvoice] = useState(false);
 
     useEffect(() => {
         fetchOrderDetail();
@@ -92,12 +94,18 @@ const OrderDetail = () => {
                     </button>
                     <div className="order-header-info">
                         <h1>Order #{order.id?.substring(0, 8)}</h1>
-                        <div
-                            className="status-badge"
-                            style={{ backgroundColor: getStatusColor(order.status) }}
-                        >
-                            {getStatusIcon(order.status)}
-                            <span>{order.status}</span>
+                        <div className="order-header-actions">
+                            <div
+                                className="status-badge"
+                                style={{ backgroundColor: getStatusColor(order.status) }}
+                            >
+                                {getStatusIcon(order.status)}
+                                <span>{order.status}</span>
+                            </div>
+                            <button onClick={() => setShowInvoice(true)} className="invoice-button">
+                                <FileText size={18} />
+                                View Invoice
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -220,6 +228,14 @@ const OrderDetail = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Invoice Modal */}
+            {showInvoice && (
+                <Invoice
+                    order={order}
+                    onClose={() => setShowInvoice(false)}
+                />
+            )}
         </div>
     );
 };
