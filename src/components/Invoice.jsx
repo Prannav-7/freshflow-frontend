@@ -1,4 +1,5 @@
 import { FileText, Download, Printer } from 'lucide-react';
+import html2pdf from 'html2pdf.js';
 import './Invoice.css';
 
 const Invoice = ({ order, onClose }) => {
@@ -7,75 +8,27 @@ const Invoice = ({ order, onClose }) => {
     };
 
     const handleDownload = () => {
-        // Trigger browser's save as PDF directly
-        const printWindow = window.open('', '_blank');
-        if (printWindow) {
-            printWindow.document.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Invoice - ${order.id?.substring(0, 8)}</title>
-                    <style>
-                        ${getInvoiceStyles()}
-                    </style>
-                </head>
-                <body>
-                    ${document.querySelector('.invoice-content').innerHTML}
-                    <script>
-                        window.onload = function() {
-                            window.print();
-                            setTimeout(() => window.close(), 100);
-                        };
-                    </script>
-                </body>
-                </html>
-            `);
-            printWindow.document.close();
-        }
-    };
+        const element = document.querySelector('.invoice-content');
+        const opt = {
+            margin: [15, 15, 15, 15], // 15mm margins on all sides
+            filename: `Invoice_${order.id?.substring(0, 8) || 'document'}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: {
+                scale: 2,
+                useCORS: true,
+                letterRendering: true,
+                logging: false
+            },
+            jsPDF: {
+                unit: 'mm',
+                format: 'a4',
+                orientation: 'portrait',
+                compress: true
+            },
+            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+        };
 
-    const getInvoiceStyles = () => {
-        return `
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            html, body { width: 100%; height: 100%; }
-            body { font-family: Arial, sans-serif; padding: 0; font-size: 11px; width: 210mm; }
-            .invoice-header { display: flex; justify-content: space-between; margin-bottom: 15px; }
-            .company-info h1 { font-size: 22px; color: #2d6a4f; margin-bottom: 5px; }
-            .company-info p { font-size: 11px; margin: 2px 0; line-height: 1.5; }
-            .invoice-meta { text-align: right; }
-            .invoice-meta h2 { font-size: 20px; margin-bottom: 8px; }
-            .invoice-meta p { font-size: 11px; margin: 3px 0; line-height: 1.5; }
-            .invoice-divider { height: 1px; background: #2d6a4f; margin: 12px 0; }
-            .invoice-addresses { display: flex; gap: 20px; margin-bottom: 15px; }
-            .address-section { flex: 1; }
-            .address-section h3 { font-size: 13px; color: #2d6a4f; margin-bottom: 5px; border-bottom: 1px solid #2d6a4f; padding-bottom: 3px; }
-            .address-section p { font-size: 11px; margin: 2px 0; line-height: 1.5; }
-            .invoice-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-            .invoice-table thead { background: #2d6a4f; color: white; }
-            .invoice-table th { padding: 8px; text-align: left; font-size: 11px; }
-            .invoice-table td { padding: 8px; font-size: 11px; border-bottom: 1px solid #e5e7eb; }
-            .invoice-table th:last-child, .invoice-table td:last-child { text-align: right; }
-            .item-category { font-size: 10px; color: #666; }
-            .invoice-totals { max-width: 350px; margin-left: auto; margin-bottom: 15px; }
-            .totals-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 11px; }
-            .grand-total { font-size: 14px; font-weight: bold; color: #2d6a4f; padding-top: 6px; border-top: 1px solid #000; }
-            .payment-info { background: #f9fafb; padding: 10px; border-radius: 5px; margin-bottom: 15px; }
-            .payment-info h3 { font-size: 12px; color: #2d6a4f; margin-bottom: 5px; }
-            .payment-info p { font-size: 11px; margin: 2px 0; }
-            .invoice-footer { display: flex; gap: 20px; padding-top: 12px; border-top: 1px solid #e5e7eb; }
-            .footer-notes, .footer-signature { flex: 1; }
-            .footer-notes h4 { font-size: 12px; color: #2d6a4f; margin-bottom: 5px; }
-            .footer-notes li { font-size: 10px; padding: 2px 0; list-style: none; }
-            .footer-notes li::before { content: "• "; color: #2d6a4f; font-weight: bold; }
-            .footer-signature { text-align: right; }
-            .footer-signature p { font-size: 11px; margin: 3px 0; }
-            .signature-line { margin-top: 20px; padding-top: 3px; border-top: 1px solid #000; display: inline-block; min-width: 150px; font-style: italic; font-size: 10px; }
-            @media print { 
-                @page { size: A4 portrait; margin: 15mm; } 
-                body { padding: 0; margin: 0; width: 210mm; } 
-                * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            }
-        `;
+        html2pdf().set(opt).from(element).save();
     };
 
     return (
