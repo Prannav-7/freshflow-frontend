@@ -159,7 +159,7 @@ const Contact = () => {
                                 <MessageCircle size={24} />
                                 <p>
                                     For urgent queries, you can also reach us via WhatsApp at
-                                    <a href="https://wa.me/918838686407" target="_blank" rel="noopener noreferrer" style={{ color: '#25D366', fontWeight: 'bold', marginLeft: '5px' }}>8838686407</a>
+                                    <a href="https://wa.me/918838686407?text=Hello%20Fresh%20Flow!%20🌿%0A%0AI%20have%20an%20urgent%20query%20about%20your%20organic%20products.%20Please%20help%20me%20with..." target="_blank" rel="noopener noreferrer" style={{ color: '#25D366', fontWeight: 'bold', marginLeft: '5px' }}>8838686407</a>
                                 </p>
                             </div>
                         </div>

@@ -63,7 +63,7 @@ const Footer = () => {
               </li>
               <li>
                 <MessageCircle size={16} />
-                <a href="https://wa.me/918838686407" target="_blank" rel="noopener noreferrer">WhatsApp: 8838686407</a>
+                <a href="https://wa.me/918838686407?text=Hi%20Fresh%20Flow!%20🌿%0A%0AI'm%20interested%20in%20your%20100%25%20organic%20products.%20I%20would%20like%20to%20know%20more%20about%20your%20offerings.%0A%0AThank%20you!" target="_blank" rel="noopener noreferrer">WhatsApp: 8838686407</a>
               </li>
               <li>
                 <MapPin size={16} />

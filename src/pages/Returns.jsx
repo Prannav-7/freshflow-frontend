@@ -70,7 +70,7 @@ const Returns = () => {
                                 <div className="step-circle">1</div>
                                 <h3>Contact Us Within 48 Hours</h3>
                                 <p>
-                                    Call us at <a href="tel:8056638446" style={{ color: '#2d6a4f', fontWeight: 'bold' }}>8056638446</a> or <a href="tel:9976238446" style={{ color: '#2d6a4f', fontWeight: 'bold' }}>9976238446</a>, WhatsApp us at <a href="https://wa.me/918838686407" target="_blank" rel="noopener noreferrer" style={{ color: '#25D366', fontWeight: 'bold' }}>8838686407</a>, or
+                                    Call us at <a href="tel:8056638446" style={{ color: '#2d6a4f', fontWeight: 'bold' }}>8056638446</a> or <a href="tel:9976238446" style={{ color: '#2d6a4f', fontWeight: 'bold' }}>9976238446</a>, WhatsApp us at <a href="https://wa.me/918838686407?text=Hi%20Fresh%20Flow!%20🔄%0A%0AI%20need%20to%20return%20a%20product.%0AOrder%20ID:%20%0AReason:%20%0A%0APlease%20help%20me%20with%20the%20return%20process.%0A%0AThank%20you!" target="_blank" rel="noopener noreferrer" style={{ color: '#25D366', fontWeight: 'bold' }}>8838686407</a>, or
                                     email <a href="mailto:info.iyarkaivalari@gmail.com" style={{ color: '#2d6a4f', fontWeight: 'bold' }}>info.iyarkaivalari@gmail.com</a> with your order ID and reason for return.
                                 </p>
                             </div>
@@ -215,7 +215,7 @@ const Returns = () => {
                                 </div>
                             </div>
                             <p className="cancellation-note">
-                                To cancel, call us immediately at <a href="tel:8056638446" style={{ color: '#2d6a4f', fontWeight: 'bold' }}>8056638446</a> or <a href="tel:9976238446" style={{ color: '#2d6a4f', fontWeight: 'bold' }}>9976238446</a>, or WhatsApp <a href="https://wa.me/918838686407" target="_blank" rel="noopener noreferrer" style={{ color: '#25D366', fontWeight: 'bold' }}>8838686407</a>
+                                To cancel, call us immediately at <a href="tel:8056638446" style={{ color: '#2d6a4f', fontWeight: 'bold' }}>8056638446</a> or <a href="tel:9976238446" style={{ color: '#2d6a4f', fontWeight: 'bold' }}>9976238446</a>, or WhatsApp <a href="https://wa.me/918838686407?text=Hello%20Fresh%20Flow!%20❌%0A%0AI%20need%20to%20cancel%20my%20order.%0AOrder%20ID:%20%0A%0APlease%20help%20me%20cancel%20it%20urgently.%0A%0AThank%20you!" target="_blank" rel="noopener noreferrer" style={{ color: '#25D366', fontWeight: 'bold' }}>8838686407</a>
                             </p>
                         </div>
                     </div>
@@ -245,7 +245,7 @@ const Returns = () => {
                                 <MessageCircle size={28} />
                                 <div>
                                     <h4>WhatsApp Us</h4>
-                                    <p><a href="https://wa.me/918838686407" target="_blank" rel="noopener noreferrer" style={{ color: '#25D366', textDecoration: 'none', fontWeight: '600' }}>8838686407</a></p>
+                                    <p><a href="https://wa.me/918838686407?text=Hi%20Fresh%20Flow!%20🌿%0A%0AI%20need%20assistance%20with%20returns%20and%20refunds.%0A%0ACan%20you%20please%20help%20me?%0A%0AThank%20you!" target="_blank" rel="noopener noreferrer" style={{ color: '#25D366', textDecoration: 'none', fontWeight: '600' }}>8838686407</a></p>
                                     <span>Quick response</span>
                                 </div>
                             </div>

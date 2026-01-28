@@ -183,7 +183,7 @@ const Shipping = () => {
                                 <MessageCircle size={24} />
                                 <div>
                                     <h4>WhatsApp</h4>
-                                    <p><a href="https://wa.me/918838686407" target="_blank" rel="noopener noreferrer" style={{ color: '#25D366', textDecoration: 'none', fontWeight: '600' }}>8838686407</a></p>
+                                    <p><a href="https://wa.me/918838686407?text=Hello%20Fresh%20Flow!%20📦%0A%0AI%20have%20a%20question%20about%20shipping%20for%20organic%20products.%20Can%20you%20help%20me?%0A%0AThank%20you!" target="_blank" rel="noopener noreferrer" style={{ color: '#25D366', textDecoration: 'none', fontWeight: '600' }}>8838686407</a></p>
                                 </div>
                             </div>
                         </div>

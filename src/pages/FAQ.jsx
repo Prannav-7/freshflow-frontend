@@ -114,7 +114,7 @@ const FAQ = () => {
                             <a href="tel:8056638446" className="contact-btn primary">
                                 📞 Call Us: 8056638446
                             </a>
-                            <a href="https://wa.me/918838686407" target="_blank" rel="noopener noreferrer" className="contact-btn primary" style={{ background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)' }}>
+                            <a href="https://wa.me/918838686407?text=Hi%20Fresh%20Flow!%20🌿%0A%0AI%20have%20some%20questions%20about%20your%20100%25%20organic%20products.%20Can%20you%20help%20me?%0A%0AThank%20you!" target="_blank" rel="noopener noreferrer" className="contact-btn primary" style={{ background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)' }}>
                                 💬 WhatsApp: 8838686407
                             </a>
                             <a href="mailto:info.iyarkaivalari@gmail.com" className="contact-btn secondary">
