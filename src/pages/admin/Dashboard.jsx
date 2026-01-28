@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import html2pdf from 'html2pdf.js';
 import {
     TrendingUp,
     ShoppingBag,
@@ -10,7 +11,9 @@ import {
     ArrowDown,
     Home,
     AlertTriangle,
-    X
+    X,
+    Download,
+    FileText
 } from 'lucide-react';
 import {
     AreaChart,
@@ -259,6 +262,154 @@ const Dashboard = () => {
             .sort((a, b) => b.revenue - a.revenue);
     };
 
+    // Download Sales Report as CSV
+    const downloadCSVReport = () => {
+        const reportData = getProductSalesReport();
+        const filteredOrders = filterOrdersByTime(orders);
+
+        // Calculate summary stats
+        const totalRevenue = filteredOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
+        const totalOrders = filteredOrders.length;
+
+        // Create CSV content
+        let csv = 'Fresh Flow - Sales Report\n';
+        csv += `Generated: ${new Date().toLocaleString()}\n`;
+        csv += `Period: ${timeFilter.toUpperCase()}\n`;
+        csv += `\n`;
+        csv += `Summary:\n`;
+        csv += `Total Revenue,₹${totalRevenue.toLocaleString()}\n`;
+        csv += `Total Orders,${totalOrders}\n`;
+        csv += `Total Products Sold,${reportData.length}\n`;
+        csv += `\n`;
+        csv += `Detailed Product Sales:\n`;
+        csv += 'Rank,Product Name,Quantity Sold,Unit,Total Revenue (₹),Average Price (₹)\n';
+
+        reportData.forEach((product, index) => {
+            csv += `${index + 1},${product.name},${product.quantity.toFixed(3)},${product.unit || 'kg'},${product.revenue.toLocaleString()},${(product.revenue / product.quantity).toFixed(2)}\n`;
+        });
+
+        // Create download link
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+
+        link.setAttribute('href', url);
+        link.setAttribute('download', `Sales_Report_${timeFilter}_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    // Download Sales Report as PDF
+    const downloadPDFReport = async () => {
+        const reportData = getProductSalesReport();
+        const filteredOrders = filterOrdersByTime(orders);
+
+        // Calculate summary stats
+        const totalRevenue = filteredOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
+        const totalOrders = filteredOrders.length;
+
+        // Create a temporary div for PDF content
+        const tempDiv = document.createElement('div');
+        tempDiv.style.padding = '20px';
+        tempDiv.style.fontFamily = 'Arial, sans-serif';
+        tempDiv.style.backgroundColor = 'white';
+
+        tempDiv.innerHTML = `
+            <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #667eea; padding-bottom: 15px;">
+                <h1 style="color: #667eea; font-size: 28px; margin-bottom: 5px;">🌿 Fresh Flow - Sales Report</h1>
+                <p style="color: #666; font-size: 14px;">Period: ${timeFilter.toUpperCase()} | Generated: ${new Date().toLocaleString()}</p>
+            </div>
+            
+            <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+                <h2 style="color: #333; font-size: 18px; margin-bottom: 15px;">Summary</h2>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Total Revenue</div>
+                        <div style="font-size: 20px; color: #667eea; font-weight: bold;">₹${totalRevenue.toLocaleString()}</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Total Orders</div>
+                        <div style="font-size: 20px; color: #667eea; font-weight: bold;">${totalOrders}</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Products Sold</div>
+                        <div style="font-size: 20px; color: #667eea; font-weight: bold;">${reportData.length}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <h2 style="color: #333; margin-bottom: 10px; font-size: 18px;">Detailed Product Sales</h2>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                <thead style="background: #667eea; color: white;">
+                    <tr>
+                        <th style="padding: 12px; text-align: left; font-size: 12px; text-transform: uppercase;">Rank</th>
+                        <th style="padding: 12px; text-align: left; font-size: 12px; text-transform: uppercase;">Product Name</th>
+                        <th style="padding: 12px; text-align: left; font-size: 12px; text-transform: uppercase;">Quantity Sold</th>
+                        <th style="padding: 12px; text-align: left; font-size: 12px; text-transform: uppercase;">Total Revenue</th>
+                        <th style="padding: 12px; text-align: left; font-size: 12px; text-transform: uppercase;">Avg. Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${reportData.map((product, index) => `
+                        <tr style="border-bottom: 1px solid #e5e7eb;">
+                            <td style="padding: 12px;">
+                                <span style="background: ${index < 3 ? 'linear-gradient(135deg, #f59e0b, #d97706)' : '#6b7280'}; color: white; padding: 4px 10px; border-radius: 20px; font-weight: bold; display: inline-block; min-width: 30px; text-align: center;">
+                                    ${index + 1}
+                                </span>
+                            </td>
+                            <td style="padding: 12px; font-size: 14px;">${product.name}</td>
+                            <td style="padding: 12px; font-size: 14px;">${product.quantity.toFixed(3)} ${product.unit || 'kg'}</td>
+                            <td style="padding: 12px; font-size: 14px;">₹${product.revenue.toLocaleString()}</td>
+                            <td style="padding: 12px; font-size: 14px;">₹${(product.revenue / product.quantity).toFixed(2)}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+            
+            <div style="margin-top: 30px; text-align: center; color: #666; font-size: 12px; padding-top: 15px; border-top: 1px solid #e5e7eb;">
+                <p style="margin: 5px 0;">Fresh Flow - Premium Organic Products</p>
+                <p style="margin: 5px 0;">Thank you for choosing Fresh Flow!</p>
+            </div>
+        `;
+
+        // Append to body temporarily
+        document.body.appendChild(tempDiv);
+
+        // Configure html2pdf options
+        const opt = {
+            margin: [15, 15, 15, 15],
+            filename: `Sales_Report_${timeFilter}_${new Date().toISOString().split('T')[0]}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: {
+                scale: 2,
+                useCORS: true,
+                letterRendering: true,
+                logging: false
+            },
+            jsPDF: {
+                unit: 'mm',
+                format: 'a4',
+                orientation: 'portrait',
+                compress: true
+            },
+            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+        };
+
+        // Generate and download PDF
+        try {
+            await html2pdf().set(opt).from(tempDiv).save();
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            alert('Error generating PDF. Please try again.');
+        } finally {
+            // Remove temporary div
+            document.body.removeChild(tempDiv);
+        }
+    };
+
     // Vibrant, modern color palette for charts
     const COLORS = ['#667eea', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899'];
 
@@ -503,8 +654,20 @@ const Dashboard = () => {
                     {/* Product Sales Report */}
                     <div className="chart-card full-width">
                         <div className="chart-header">
-                            <h3><Package size={20} /> Product Sales Report</h3>
-                            <p>Revenue and quantity sold per product</p>
+                            <div>
+                                <h3><Package size={20} /> Product Sales Report</h3>
+                                <p>Revenue and quantity sold per product</p>
+                            </div>
+                            <div className="download-buttons">
+                                <button onClick={downloadCSVReport} className="download-btn csv">
+                                    <FileText size={18} />
+                                    Export CSV
+                                </button>
+                                <button onClick={downloadPDFReport} className="download-btn pdf">
+                                    <Download size={18} />
+                                    Export PDF
+                                </button>
+                            </div>
                         </div>
                         <div className="product-sales-report">
                             <div className="product-sales-table-wrapper">

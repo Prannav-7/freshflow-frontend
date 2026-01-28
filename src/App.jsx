@@ -15,6 +15,9 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import TrackOrder from './pages/TrackOrder';
 import Wishlist from './pages/Wishlist';
+import FAQ from './pages/FAQ';
+import Shipping from './pages/Shipping';
+import Returns from './pages/Returns';
 // Admin Pages
 import Dashboard from './pages/admin/Dashboard';
 import ProductManagement from './pages/admin/ProductManagement';
@@ -51,6 +54,9 @@ function AppContent() {
           <Route path="/orders/:id" element={<OrderDetail />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/shipping" element={<Shipping />} />
+          <Route path="/returns" element={<Returns />} />
           <Route path="/track-order" element={<TrackOrder />} />
 
           {/* Admin Routes */}

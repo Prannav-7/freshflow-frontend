@@ -12,10 +12,10 @@ const About = () => {
                 <div className="container">
                     <div className="about-hero-content">
                         <h1 className="about-hero-title">
-                            About <span className="highlight">FreshFlow</span>
+                            About <span className="highlight">VALARI</span>
                         </h1>
                         <p className="about-hero-subtitle">
-                            Your trusted partner for 100% organic and fresh products
+                            VALARI IYARKAI VELAN URPATHI MAIYAM - Your trusted partner for 100% organic and fresh products
                         </p>
                     </div>
                 </div>
@@ -29,20 +29,21 @@ const About = () => {
                             <h2 className="section-title">Our Story</h2>
                             <p className="story-text">
                                 Founded with a passion for healthy living and sustainable farming,
-                                FreshFlow has been delivering premium organic products to families
-                                across the nation since our inception.
+                                VALARI IYARKAI VELAN URPATHI MAIYAM has been delivering premium organic
+                                products to families across Tamil Nadu since our inception.
                             </p>
                             <p className="story-text">
                                 We believe that everyone deserves access to pure, chemical-free food
                                 that nourishes both body and soul. Our journey began with a simple
                                 mission: to bridge the gap between organic farmers and health-conscious
-                                consumers.
+                                consumers in the Erode region and beyond.
                             </p>
                             <p className="story-text">
                                 Today, we work directly with certified organic farms, ensuring that
                                 every product meets our stringent quality standards. From traditional
                                 rice varieties to cold-pressed oils, we bring you the finest selection
-                                of organic products.
+                                of organic products. We are certified with GSTIN: 33AFNPM8201K1ZB and
+                                FSSAI: 22422061000260.
                             </p>
                         </div>
                         <div className="story-image">

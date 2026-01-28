@@ -96,8 +96,9 @@ const Contact = () => {
                                     </div>
                                     <div className="info-content">
                                         <h3>Visit Us</h3>
-                                        <p>123 Organic Street, Green Valley</p>
-                                        <p>Mumbai, Maharashtra 400001</p>
+                                        <p>51-A, SORIYAMPALAYAM</p>
+                                        <p>VAZHAITHOTTAM (Po), SIVAGIRI - 638109</p>
+                                        <p>ERODE (Dt), Tamil Nadu</p>
                                     </div>
                                 </div>
 
@@ -107,8 +108,8 @@ const Contact = () => {
                                     </div>
                                     <div className="info-content">
                                         <h3>Call Us</h3>
-                                        <p>+91 98765 43210</p>
-                                        <p>+91 87654 32109</p>
+                                        <p>8056638446</p>
+                                        <p>9976238446</p>
                                     </div>
                                 </div>
 
@@ -118,8 +119,8 @@ const Contact = () => {
                                     </div>
                                     <div className="info-content">
                                         <h3>Email Us</h3>
-                                        <p>info@freshflow.com</p>
-                                        <p>support@freshflow.com</p>
+                                        <p>info@valari.com</p>
+                                        <p>support@valari.com</p>
                                     </div>
                                 </div>
 
@@ -140,7 +141,7 @@ const Contact = () => {
                                 <MessageCircle size={24} />
                                 <p>
                                     For urgent queries, you can also reach us via WhatsApp at
-                                    <strong> +91 98765 43210</strong>
+                                    <strong> 8056638446</strong> or <strong>9976238446</strong>
                                 </p>
                             </div>
                         </div>
@@ -239,8 +240,8 @@ const Contact = () => {
                     <h2 className="map-title">Find Us Here</h2>
                     <div className="map-wrapper">
                         <iframe
-                            title="FreshFlow Location"
-                            src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3911.6869842574743!2d77.76471317590315!3d11.075239954602128!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMTHCsDA0JzMwLjkiTiA3N8KwNDYnMDEuNyJF!5e0!3m2!1sen!2sin!4v1706007000000!5m2!1sen!2sin"
+                            title="VALARI Location - Sivagiri, Erode"
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31251.234567890123!2d77.3!3d11.33!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTHCsDE5JzQ4LjAiTiA3N8KwMTgnMDAuMCJF!5e0!3m2!1sen!2sin!4v1706007000000!5m2!1sen!2sin"
                             width="100%"
                             height="450"
                             style={{ border: 0, borderRadius: '16px' }}

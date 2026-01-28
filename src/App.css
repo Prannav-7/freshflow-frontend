@@ -1677,6 +1677,26 @@ body {
   margin-bottom: 20px;
 }
 
+.footer-credentials {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border-left: 3px solid var(--secondary-color);
+}
+
+.footer-credentials p {
+  margin: 8px 0;
+  font-size: 14px;
+  opacity: 0.95;
+  line-height: 1.6;
+}
+
+.footer-credentials strong {
+  color: var(--secondary-color);
+  margin-right: 8px;
+}
+
 .social-links {
   display: flex;
   gap: 15px;

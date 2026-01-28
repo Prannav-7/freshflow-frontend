@@ -1,0 +1,339 @@
+/* Shipping Policy Page Styles */
+.shipping-page {
+    min-height: 100vh;
+    background: #f8f9fa;
+}
+
+/* Hero Section */
+.shipping-hero {
+    background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
+    color: white;
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.shipping-hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.shipping-hero-icon {
+    margin-bottom: 20px;
+    opacity: 0.9;
+}
+
+.shipping-hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    line-height: 1.2;
+}
+
+.shipping-hero-subtitle {
+    font-size: 1.25rem;
+    opacity: 0.95;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Main Content */
+.shipping-main {
+    padding: 80px 20px;
+}
+
+.shipping-overview {
+    max-width: 900px;
+    margin: 0 auto 60px;
+    text-align: center;
+}
+
+.shipping-overview h2 {
+    font-size: 2.5rem;
+    color: #2d3748;
+    margin-bottom: 20px;
+}
+
+.shipping-overview p {
+    font-size: 1.125rem;
+    color: #4a5568;
+    line-height: 1.8;
+}
+
+/* Shipping Details Grid */
+.shipping-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 80px;
+}
+
+.shipping-detail-card {
+    background: white;
+    padding: 40px 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.shipping-detail-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.detail-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-bottom: 24px;
+}
+
+.shipping-detail-card h3 {
+    font-size: 1.5rem;
+    color: #2d3748;
+    margin-bottom: 16px;
+    font-weight: 700;
+}
+
+.shipping-detail-card p {
+    color: #4a5568;
+    line-height: 1.7;
+    margin-bottom: 20px;
+}
+
+.shipping-detail-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.shipping-detail-card ul li {
+    padding: 10px 0;
+    color: #4a5568;
+    border-bottom: 1px solid #e2e8f0;
+    line-height: 1.6;
+}
+
+.shipping-detail-card ul li:last-child {
+    border-bottom: none;
+}
+
+.shipping-detail-card ul li strong {
+    color: #2d6a4f;
+    font-weight: 600;
+}
+
+/* Delivery Process */
+.delivery-process {
+    max-width: 1200px;
+    margin: 0 auto 80px;
+}
+
+.delivery-process h2 {
+    font-size: 2.5rem;
+    color: #2d3748;
+    margin-bottom: 50px;
+    text-align: center;
+}
+
+.process-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+.process-step {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.process-step:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.step-number {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 auto 20px;
+}
+
+.process-step h3 {
+    font-size: 1.25rem;
+    color: #2d3748;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.process-step p {
+    color: #4a5568;
+    line-height: 1.6;
+}
+
+/* Important Notes */
+.shipping-notes {
+    max-width: 1200px;
+    margin: 0 auto 80px;
+}
+
+.shipping-notes h2 {
+    font-size: 2.5rem;
+    color: #2d3748;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.note-card {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    border-left: 4px solid #2d6a4f;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+}
+
+.note-card:hover {
+    border-left-width: 6px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.note-card h4 {
+    font-size: 1.125rem;
+    color: #2d3748;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.note-card p {
+    color: #4a5568;
+    line-height: 1.7;
+    font-size: 0.95rem;
+}
+
+/* Contact Section */
+.shipping-contact {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+    background: white;
+    padding: 60px 40px;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.shipping-contact h2 {
+    font-size: 2rem;
+    color: #2d3748;
+    margin-bottom: 16px;
+}
+
+.shipping-contact>p {
+    color: #4a5568;
+    font-size: 1.125rem;
+    margin-bottom: 40px;
+}
+
+.contact-options {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.contact-option {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 30px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.contact-option:hover {
+    background: #e9ecef;
+    transform: translateY(-3px);
+}
+
+.contact-option svg {
+    color: #2d6a4f;
+    flex-shrink: 0;
+}
+
+.contact-option h4 {
+    font-size: 1rem;
+    color: #2d3748;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.contact-option p {
+    color: #4a5568;
+    font-size: 0.95rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .shipping-hero {
+        padding: 60px 20px;
+    }
+
+    .shipping-hero-title {
+        font-size: 2rem;
+    }
+
+    .shipping-hero-subtitle {
+        font-size: 1rem;
+    }
+
+    .shipping-main {
+        padding: 40px 20px;
+    }
+
+    .shipping-overview h2,
+    .delivery-process h2,
+    .shipping-notes h2 {
+        font-size: 1.75rem;
+    }
+
+    .shipping-details-grid,
+    .process-steps,
+    .notes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .shipping-contact {
+        padding: 40px 24px;
+    }
+
+    .contact-options {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .contact-option {
+        width: 100%;
+    }
+}
