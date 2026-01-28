@@ -40,7 +40,7 @@ const FAQ = () => {
         },
         {
             question: 'Do you offer bulk or wholesale pricing?',
-            answer: 'Yes, we offer special pricing for bulk orders and wholesale purchases. Please contact us directly at 8056638446 or 9976238446 to discuss your requirements and get a customized quote.'
+            answer: 'Yes, we offer special pricing for bulk orders and wholesale purchases. Please contact us directly at 8056638446, 9976238446, or WhatsApp us at 8838686407 to discuss your requirements and get a customized quote.'
         },
         {
             question: 'How do you ensure product freshness?',
@@ -56,7 +56,7 @@ const FAQ = () => {
         },
         {
             question: 'How can I contact customer support?',
-            answer: 'You can reach us through multiple channels: Call us at 8056638446 or 9976238446, WhatsApp at the same numbers, or use the contact form on our Contact Us page. We typically respond within 24 hours.'
+            answer: 'You can reach us through multiple channels: Call us at 8056638446 or 9976238446, WhatsApp at 8838686407, email us at info.iyarkaivalari@gmail.com, or use the contact form on our Contact Us page. We typically respond within 24 hours.'
         }
     ];
 
@@ -112,10 +112,13 @@ const FAQ = () => {
                         </p>
                         <div className="faq-contact-buttons">
                             <a href="tel:8056638446" className="contact-btn primary">
-                                Call Us: 8056638446
+                                📞 Call Us: 8056638446
                             </a>
-                            <a href="/contact" className="contact-btn secondary">
-                                Contact Form
+                            <a href="https://wa.me/918838686407" target="_blank" rel="noopener noreferrer" className="contact-btn primary" style={{ background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)' }}>
+                                💬 WhatsApp: 8838686407
+                            </a>
+                            <a href="mailto:info.iyarkaivalari@gmail.com" className="contact-btn secondary">
+                                📧 Email Us
                             </a>
                         </div>
                     </div>

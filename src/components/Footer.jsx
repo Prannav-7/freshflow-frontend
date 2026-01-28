@@ -1,4 +1,4 @@
-import { Facebook, Twitter, Instagram, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Twitter, Instagram, Mail, Phone, MapPin, MessageCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
@@ -51,11 +51,19 @@ const Footer = () => {
             <ul className="contact-info">
               <li>
                 <Phone size={16} />
-                <span>8056638446</span>
+                <a href="tel:8056638446">8056638446</a>
               </li>
               <li>
                 <Phone size={16} />
-                <span>9976238446</span>
+                <a href="tel:9976238446">9976238446</a>
+              </li>
+              <li>
+                <Mail size={16} />
+                <a href="mailto:info.iyarkaivalari@gmail.com">info.iyarkaivalari@gmail.com</a>
+              </li>
+              <li>
+                <MessageCircle size={16} />
+                <a href="https://wa.me/918838686407" target="_blank" rel="noopener noreferrer">WhatsApp: 8838686407</a>
               </li>
               <li>
                 <MapPin size={16} />

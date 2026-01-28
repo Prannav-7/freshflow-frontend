@@ -1751,6 +1751,19 @@ body {
   margin-top: 2px;
 }
 
+.contact-info a {
+  color: white;
+  text-decoration: none;
+  opacity: 0.9;
+  transition: all 0.3s ease;
+}
+
+.contact-info a:hover {
+  opacity: 1;
+  color: var(--secondary-color);
+  text-decoration: underline;
+}
+
 .footer-bottom {
   display: flex;
   justify-content: space-between;

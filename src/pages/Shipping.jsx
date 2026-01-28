@@ -1,4 +1,4 @@
-import { Package, Truck, MapPin, Clock, Phone, Mail } from 'lucide-react';
+import { Package, Truck, MapPin, Clock, Phone, Mail, MessageCircle } from 'lucide-react';
 import './Shipping.css';
 
 const Shipping = () => {
@@ -169,14 +169,21 @@ const Shipping = () => {
                                 <Phone size={24} />
                                 <div>
                                     <h4>Call Us</h4>
-                                    <p>8056638446 | 9976238446</p>
+                                    <p><a href="tel:8056638446" style={{ color: 'inherit', textDecoration: 'none' }}>8056638446</a> | <a href="tel:9976238446" style={{ color: 'inherit', textDecoration: 'none' }}>9976238446</a></p>
                                 </div>
                             </div>
                             <div className="contact-option">
                                 <Mail size={24} />
                                 <div>
                                     <h4>Email Us</h4>
-                                    <p>support@freshflow.com</p>
+                                    <p><a href="mailto:info.iyarkaivalari@gmail.com" style={{ color: 'inherit', textDecoration: 'none' }}>info.iyarkaivalari@gmail.com</a></p>
+                                </div>
+                            </div>
+                            <div className="contact-option">
+                                <MessageCircle size={24} />
+                                <div>
+                                    <h4>WhatsApp</h4>
+                                    <p><a href="https://wa.me/918838686407" target="_blank" rel="noopener noreferrer" style={{ color: '#25D366', textDecoration: 'none', fontWeight: '600' }}>8838686407</a></p>
                                 </div>
                             </div>
                         </div>

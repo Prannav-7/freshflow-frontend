@@ -70,8 +70,8 @@ const Returns = () => {
                                 <div className="step-circle">1</div>
                                 <h3>Contact Us Within 48 Hours</h3>
                                 <p>
-                                    Call us at <strong>8056638446</strong> or <strong>9976238446</strong> or
-                                    email <strong>support@freshflow.com</strong> with your order ID and reason for return.
+                                    Call us at <a href="tel:8056638446" style={{ color: '#2d6a4f', fontWeight: 'bold' }}>8056638446</a> or <a href="tel:9976238446" style={{ color: '#2d6a4f', fontWeight: 'bold' }}>9976238446</a>, WhatsApp us at <a href="https://wa.me/918838686407" target="_blank" rel="noopener noreferrer" style={{ color: '#25D366', fontWeight: 'bold' }}>8838686407</a>, or
+                                    email <a href="mailto:info.iyarkaivalari@gmail.com" style={{ color: '#2d6a4f', fontWeight: 'bold' }}>info.iyarkaivalari@gmail.com</a> with your order ID and reason for return.
                                 </p>
                             </div>
 
@@ -215,7 +215,7 @@ const Returns = () => {
                                 </div>
                             </div>
                             <p className="cancellation-note">
-                                To cancel, call us immediately at <strong>8056638446</strong> or <strong>9976238446</strong>
+                                To cancel, call us immediately at <a href="tel:8056638446" style={{ color: '#2d6a4f', fontWeight: 'bold' }}>8056638446</a> or <a href="tel:9976238446" style={{ color: '#2d6a4f', fontWeight: 'bold' }}>9976238446</a>, or WhatsApp <a href="https://wa.me/918838686407" target="_blank" rel="noopener noreferrer" style={{ color: '#25D366', fontWeight: 'bold' }}>8838686407</a>
                             </p>
                         </div>
                     </div>
@@ -229,7 +229,7 @@ const Returns = () => {
                                 <Phone size={28} />
                                 <div>
                                     <h4>Call Us</h4>
-                                    <p>8056638446 | 9976238446</p>
+                                    <p><a href="tel:8056638446" style={{ color: 'inherit', textDecoration: 'none' }}>8056638446</a> | <a href="tel:9976238446" style={{ color: 'inherit', textDecoration: 'none' }}>9976238446</a></p>
                                     <span>Mon-Sat: 9 AM - 8 PM</span>
                                 </div>
                             </div>
@@ -237,8 +237,16 @@ const Returns = () => {
                                 <Mail size={28} />
                                 <div>
                                     <h4>Email Us</h4>
-                                    <p>support@freshflow.com</p>
+                                    <p><a href="mailto:info.iyarkaivalari@gmail.com" style={{ color: 'inherit', textDecoration: 'none' }}>info.iyarkaivalari@gmail.com</a></p>
                                     <span>Response within 24 hours</span>
+                                </div>
+                            </div>
+                            <div className="contact-method">
+                                <MessageCircle size={28} />
+                                <div>
+                                    <h4>WhatsApp Us</h4>
+                                    <p><a href="https://wa.me/918838686407" target="_blank" rel="noopener noreferrer" style={{ color: '#25D366', textDecoration: 'none', fontWeight: '600' }}>8838686407</a></p>
+                                    <span>Quick response</span>
                                 </div>
                             </div>
                         </div>

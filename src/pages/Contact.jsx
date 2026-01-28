@@ -43,20 +43,39 @@ const Contact = () => {
             return;
         }
 
-        // Simulate form submission
+        // Create Gmail compose URL with form data
+        const subject = encodeURIComponent(formData.subject || 'Contact Form Inquiry - Fresh Flow');
+        const body = encodeURIComponent(
+            `Name: ${formData.name}\n` +
+            `Email: ${formData.email}\n` +
+            `Phone: ${formData.phone || 'Not provided'}\n\n` +
+            `Message:\n${formData.message}\n\n` +
+            `---\n` +
+            `This message was sent from Fresh Flow Contact Form`
+        );
+
+        // Gmail compose URL - opens in new tab
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=info.iyarkaivalari@gmail.com&su=${subject}&body=${body}`;
+
+        // Open Gmail in new tab
+        window.open(gmailUrl, '_blank');
+
+        // Show success message
         setFormStatus({
             type: 'success',
-            message: 'Thank you for contacting us! We will get back to you soon.'
+            message: 'Gmail opened in new tab! Please review and send the email to complete your inquiry.'
         });
 
         // Reset form
-        setFormData({
-            name: '',
-            email: '',
-            phone: '',
-            subject: '',
-            message: ''
-        });
+        setTimeout(() => {
+            setFormData({
+                name: '',
+                email: '',
+                phone: '',
+                subject: '',
+                message: ''
+            });
+        }, 1500);
 
         // Clear status message after 5 seconds
         setTimeout(() => {
@@ -108,8 +127,8 @@ const Contact = () => {
                                     </div>
                                     <div className="info-content">
                                         <h3>Call Us</h3>
-                                        <p>8056638446</p>
-                                        <p>9976238446</p>
+                                        <p><a href="tel:8056638446" style={{ color: 'inherit', textDecoration: 'none' }}>8056638446</a></p>
+                                        <p><a href="tel:9976238446" style={{ color: 'inherit', textDecoration: 'none' }}>9976238446</a></p>
                                     </div>
                                 </div>
 
@@ -119,8 +138,7 @@ const Contact = () => {
                                     </div>
                                     <div className="info-content">
                                         <h3>Email Us</h3>
-                                        <p>info@valari.com</p>
-                                        <p>support@valari.com</p>
+                                        <p><a href="mailto:info.iyarkaivalari@gmail.com" style={{ color: 'inherit', textDecoration: 'none' }}>info.iyarkaivalari@gmail.com</a></p>
                                     </div>
                                 </div>
 
@@ -141,7 +159,7 @@ const Contact = () => {
                                 <MessageCircle size={24} />
                                 <p>
                                     For urgent queries, you can also reach us via WhatsApp at
-                                    <strong> 8056638446</strong> or <strong>9976238446</strong>
+                                    <a href="https://wa.me/918838686407" target="_blank" rel="noopener noreferrer" style={{ color: '#25D366', fontWeight: 'bold', marginLeft: '5px' }}>8838686407</a>
                                 </p>
                             </div>
                         </div>
