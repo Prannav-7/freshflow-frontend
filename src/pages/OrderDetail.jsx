@@ -111,9 +111,96 @@ const OrderDetail = () => {
                 </div>
 
                 <div className="order-detail-grid">
-                    {/* Order Information */}
+                    {/* Customer Details - First */}
+                    <div className="order-info-card">
+                        <h2>Customer Details</h2>
+                        <div className="info-row">
+                            <User size={20} />
+                            <div>
+                                <label>Name</label>
+                                <p>{order.shippingAddress?.fullName || order.userName}</p>
+                            </div>
+                        </div>
+                        <div className="info-row">
+                            <Mail size={20} />
+                            <div>
+                                <label>Email</label>
+                                <p>{order.shippingAddress?.email || order.userEmail}</p>
+                            </div>
+                        </div>
+                        <div className="info-row">
+                            <User size={20} />
+                            <div>
+                                <label>User ID</label>
+                                <p>{order.userId}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Shipping Information - Second */}
+                    <div className="order-info-card">
+                        <h2>Shipping Address</h2>
+                        <div className="info-row">
+                            <User size={20} />
+                            <div>
+                                <label>Name</label>
+                                <p>{order.shippingAddress?.fullName || order.userName}</p>
+                            </div>
+                        </div>
+                        <div className="info-row">
+                            <Phone size={20} />
+                            <div>
+                                <label>Phone</label>
+                                <p>{order.shippingAddress?.phone}</p>
+                            </div>
+                        </div>
+                        <div className="info-row">
+                            <Mail size={20} />
+                            <div>
+                                <label>Email</label>
+                                <p>{order.shippingAddress?.email || order.userEmail}</p>
+                            </div>
+                        </div>
+                        <div className="info-row">
+                            <MapPin size={20} />
+                            <div>
+                                <label>Address</label>
+                                <p>{order.shippingAddress?.address}</p>
+                            </div>
+                        </div>
+                        <div className="info-row">
+                            <MapPin size={20} />
+                            <div>
+                                <label>City</label>
+                                <p>{order.shippingAddress?.city}</p>
+                            </div>
+                        </div>
+                        <div className="info-row">
+                            <MapPin size={20} />
+                            <div>
+                                <label>State</label>
+                                <p>{order.shippingAddress?.state}</p>
+                            </div>
+                        </div>
+                        <div className="info-row">
+                            <MapPin size={20} />
+                            <div>
+                                <label>Pincode</label>
+                                <p>{order.shippingAddress?.pincode}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Order Information - Third */}
                     <div className="order-info-card">
                         <h2>Order Information</h2>
+                        <div className="info-row">
+                            <Package size={20} />
+                            <div>
+                                <label>Order ID</label>
+                                <p>{order.id}</p>
+                            </div>
+                        </div>
                         <div className="info-row">
                             <Calendar size={20} />
                             <div>
@@ -128,54 +215,10 @@ const OrderDetail = () => {
                             </div>
                         </div>
                         <div className="info-row">
-                            <Package size={20} />
-                            <div>
-                                <label>Order ID</label>
-                                <p>{order.id}</p>
-                            </div>
-                        </div>
-                        <div className="info-row">
                             <Truck size={20} />
                             <div>
                                 <label>Payment Method</label>
-                                <p>{order.paymentMethod || 'Cash on Delivery'}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Shipping Information */}
-                    <div className="order-info-card">
-                        <h2>Shipping Information</h2>
-                        <div className="info-row">
-                            <User size={20} />
-                            <div>
-                                <label>Recipient Name</label>
-                                <p>{order.shippingAddress?.name || 'N/A'}</p>
-                            </div>
-                        </div>
-                        <div className="info-row">
-                            <Phone size={20} />
-                            <div>
-                                <label>Phone Number</label>
-                                <p>{order.shippingAddress?.phone || 'N/A'}</p>
-                            </div>
-                        </div>
-                        <div className="info-row">
-                            <Mail size={20} />
-                            <div>
-                                <label>Email</label>
-                                <p>{order.shippingAddress?.email || 'N/A'}</p>
-                            </div>
-                        </div>
-                        <div className="info-row">
-                            <MapPin size={20} />
-                            <div>
-                                <label>Delivery Address</label>
-                                <p>
-                                    {order.shippingAddress?.street}<br />
-                                    {order.shippingAddress?.city}, {order.shippingAddress?.state} {order.shippingAddress?.zipCode}<br />
-                                    {order.shippingAddress?.country}
-                                </p>
+                                <p>{order.paymentMethod === 'cod' ? 'Cash on Delivery' : 'Online Payment'}</p>
                             </div>
                         </div>
                     </div>

@@ -142,6 +142,13 @@ const ProductDetail = () => {
     if (product) {
       fetchReviews();
       checkReviewEligibility();
+
+      // Auto-refresh review eligibility every 10 seconds to detect status changes
+      const intervalId = setInterval(() => {
+        checkReviewEligibility();
+      }, 10000);
+
+      return () => clearInterval(intervalId);
     }
   }, [product]);
 
