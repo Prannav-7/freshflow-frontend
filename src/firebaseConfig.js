@@ -18,7 +18,12 @@ const missingKeys = Object.entries(firebaseConfig)
 
 if (missingKeys.length > 0) {
     console.error('❌ Firebase Configuration Error: Missing environment variables:', missingKeys.join(', '));
-    console.error('Ensure these are set in your .env file (local) or Vercel dashboard (production).');
+} else {
+    console.log('✅ Firebase Environment Variables loaded.');
+    // Check if API key seems valid (length check)
+    if (firebaseConfig.apiKey && firebaseConfig.apiKey.length < 30) {
+        console.warn('⚠️ Firebase API Key seems too short. Check if it was truncated.');
+    }
 }
 
 // Initialize Firebase
