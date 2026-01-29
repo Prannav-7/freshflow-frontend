@@ -11,6 +11,16 @@ const firebaseConfig = {
     databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL
 };
 
+// Validation to catch missing keys early
+const missingKeys = Object.entries(firebaseConfig)
+    .filter(([key, value]) => !value)
+    .map(([key]) => key);
+
+if (missingKeys.length > 0) {
+    console.error('❌ Firebase Configuration Error: Missing environment variables:', missingKeys.join(', '));
+    console.error('Ensure these are set in your .env file (local) or Vercel dashboard (production).');
+}
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
