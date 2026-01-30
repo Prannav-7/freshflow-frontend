@@ -11,14 +11,23 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://fresh-flow-fa56.on
  * Generic API call handler
  */
 async function apiCall(endpoint, options = {}) {
+    const url = `${API_BASE_URL}${endpoint}`;
     try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        const response = await fetch(url, {
             headers: {
                 'Content-Type': 'application/json',
                 ...options.headers,
             },
             ...options,
         });
+
+        // Check if response is JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const text = await response.text();
+            console.error(`API Error: Expected JSON but got ${contentType}. URL: ${url}`);
+            throw new Error(`Server returned non-JSON response. Please ensure backend is running and URL is correct.`);
+        }
 
         const data = await response.json();
 
@@ -28,7 +37,7 @@ async function apiCall(endpoint, options = {}) {
 
         return data;
     } catch (error) {
-        console.error('API Error:', error);
+        console.error('API Error at:', url, error);
         throw error;
     }
 }
@@ -176,6 +185,22 @@ export async function updateOrder(orderId, updateData) {
 }
 
 /**
+ * Cancel an order
+ * @param {string} orderId - Order ID
+ */
+export async function cancelOrder(orderId) {
+    try {
+        const result = await apiCall(`/api/orders/${orderId}/cancel`, {
+            method: 'POST',
+        });
+        return result;
+    } catch (error) {
+        console.error('Cancel order failed:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+/**
  * Upload image to Firebase Storage
  * @param {File} imageFile - Image file to upload
  */
@@ -315,6 +340,7 @@ export default {
     getOrders,
     addOrder,
     updateOrder,
+    cancelOrder,
     uploadImage,
     addReview,
     getReviews,

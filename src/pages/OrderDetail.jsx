@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { getOrders } from '../api';
-import { Package, Truck, CheckCircle, XCircle, ArrowLeft, Calendar, MapPin, Phone, Mail, User, FileText } from 'lucide-react';
+import { getOrders, cancelOrder } from '../api';
+import { Package, Truck, CheckCircle, XCircle, ArrowLeft, Calendar, MapPin, Phone, Mail, User, FileText, Ban } from 'lucide-react';
 import Invoice from '../components/Invoice';
+import Toast from '../components/Toast';
 import './OrderDetail.css';
 
 const OrderDetail = () => {
@@ -10,7 +11,9 @@ const OrderDetail = () => {
     const navigate = useNavigate();
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [cancelling, setCancelling] = useState(false);
     const [showInvoice, setShowInvoice] = useState(false);
+    const [toast, setToast] = useState(null);
 
     useEffect(() => {
         fetchOrderDetail();
@@ -30,6 +33,30 @@ const OrderDetail = () => {
             console.error('Error fetching order:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleCancelOrder = async () => {
+        if (!window.confirm('Are you sure you want to cancel this order? This action cannot be undone.')) {
+            return;
+        }
+
+        setCancelling(true);
+        try {
+            // Use the Firestore doc ID for the update
+            const result = await cancelOrder(order.docId || order.id);
+            if (result.success) {
+                setToast({ message: 'Order cancelled successfully!', type: 'success' });
+                // Refresh order details
+                await fetchOrderDetail();
+            } else {
+                setToast({ message: result.error || 'Failed to cancel order', type: 'error' });
+            }
+        } catch (error) {
+            console.error('Error cancelling order:', error);
+            setToast({ message: 'Error connecting to server', type: 'error' });
+        } finally {
+            setCancelling(false);
         }
     };
 
@@ -102,6 +129,19 @@ const OrderDetail = () => {
                                 {getStatusIcon(order.status)}
                                 <span>{order.status}</span>
                             </div>
+
+                            {/* Cancellation Button */}
+                            {order.status !== 'Delivered' && order.status !== 'Cancelled' && (
+                                <button
+                                    onClick={handleCancelOrder}
+                                    className="cancel-order-button"
+                                    disabled={cancelling}
+                                >
+                                    <Ban size={18} />
+                                    {cancelling ? 'Cancelling...' : 'Cancel Order'}
+                                </button>
+                            )}
+
                             <button onClick={() => setShowInvoice(true)} className="invoice-button">
                                 <FileText size={18} />
                                 View Invoice
@@ -109,6 +149,7 @@ const OrderDetail = () => {
                         </div>
                     </div>
                 </div>
+                {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
                 <div className="order-detail-grid">
                     {/* Customer Details - First */}
