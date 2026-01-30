@@ -182,16 +182,18 @@ const Checkout = () => {
                 // Reduce stock for ordered items
                 try {
                     const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://fresh-flow-fa56.onrender.com';
+                    const stockItems = cartItems.map(item => ({
+                        id: item.docId || item.id?.toString(), // Use docId if available, fallback to numeric id
+                        quantity: item.quantity,
+                        size: item.selectedSize || item.size
+                    }));
+
+                    console.log('Sending stock reduction request:', stockItems);
+
                     const stockResponse = await fetch(`${API_BASE_URL}/api/products/reduce-stock`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            items: cartItems.map(item => ({
-                                id: item.firestoreId || item.id.toString(),
-                                quantity: item.quantity,
-                                size: item.selectedSize || item.size // Include size for unit conversion
-                            }))
-                        })
+                        body: JSON.stringify({ items: stockItems })
                     });
 
                     if (!stockResponse.ok) {
