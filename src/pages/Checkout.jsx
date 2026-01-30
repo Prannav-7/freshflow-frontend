@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { Package, MapPin, Phone, Mail, User, CreditCard, ArrowRight } from 'lucide-react';
+import { Package, MapPin, Phone, Mail, User, CreditCard, ArrowRight, AlertCircle } from 'lucide-react';
 import { addOrder } from '../api';
+import Toast from '../components/Toast';
 import './Checkout.css';
 
 const Checkout = () => {
@@ -10,6 +11,8 @@ const Checkout = () => {
     const { cartItems, getCartTotal, clearCart } = useCart();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [toast, setToast] = useState(null);
+    const [errors, setErrors] = useState({});
 
     const [formData, setFormData] = useState({
         fullName: '',
@@ -26,9 +29,9 @@ const Checkout = () => {
         // Check if user is logged in
         const savedUser = localStorage.getItem('user');
         if (!savedUser) {
-            alert('Please login to proceed with checkout');
+            setToast({ message: 'Please login to proceed', type: 'error' });
             localStorage.setItem('redirectAfterLogin', '/checkout');
-            navigate('/login');
+            setTimeout(() => navigate('/login'), 2000);
             return;
         }
 
@@ -48,15 +51,91 @@ const Checkout = () => {
         }
     }, [navigate, cartItems.length]);
 
+    const validateForm = () => {
+        const newErrors = {};
+        const lettersOnlyRegex = /^[A-Za-z\s]+$/;
+
+        // Full Name validation
+        if (!formData.fullName.trim()) {
+            newErrors.fullName = 'Full name is required';
+        } else if (formData.fullName.trim().length < 3) {
+            newErrors.fullName = 'Name must be at least 3 characters';
+        } else if (!lettersOnlyRegex.test(formData.fullName.trim())) {
+            newErrors.fullName = 'Name should only contain letters';
+        }
+
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!formData.email.trim()) {
+            newErrors.email = 'Email address is required';
+        } else if (!emailRegex.test(formData.email)) {
+            newErrors.email = 'Please enter a valid email address';
+        }
+
+        // Phone validation (10 digits, starts with 6-9)
+        const phoneRegex = /^[6-9][0-9]{9}$/;
+        if (!formData.phone.trim()) {
+            newErrors.phone = 'Phone number is required';
+        } else if (!phoneRegex.test(formData.phone)) {
+            newErrors.phone = 'Should be 10 digits starting with 6, 7, 8 or 9';
+        }
+
+        // Address validation
+        if (!formData.address.trim()) {
+            newErrors.address = 'Complete address is required';
+        } else if (formData.address.trim().length < 10) {
+            newErrors.address = 'Please provide a more detailed address';
+        }
+
+        // City validation (Letters only)
+        if (!formData.city.trim()) {
+            newErrors.city = 'City is required';
+        } else if (!lettersOnlyRegex.test(formData.city.trim())) {
+            newErrors.city = 'City should only contain letters';
+        }
+
+        // State validation (Letters only)
+        if (!formData.state.trim()) {
+            newErrors.state = 'State is required';
+        } else if (!lettersOnlyRegex.test(formData.state.trim())) {
+            newErrors.state = 'State should only contain letters';
+        }
+
+        // Pincode validation (6 digits)
+        const pincodeRegex = /^[0-9]{6}$/;
+        if (!formData.pincode.trim()) {
+            newErrors.pincode = 'Pincode is required';
+        } else if (!pincodeRegex.test(formData.pincode)) {
+            newErrors.pincode = 'Please enter a valid 6-digit pincode';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleChange = (e) => {
+        const { name, value } = e.target;
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value
+            [name]: value
         });
+
+        // Clear error when user starts typing
+        if (errors[name]) {
+            setErrors(prev => ({ ...prev, [name]: null }));
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Validate form
+        if (!validateForm()) {
+            setToast({ message: 'Please correct the errors in the form', type: 'error' });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -120,30 +199,32 @@ const Checkout = () => {
                     }
                 } catch (stockError) {
                     console.error('Error reducing stock:', stockError);
-                    // Don't fail the whole order if stock reduction fails
                 }
 
-                // Show success message with Order ID and tracking option
-                const orderMessage = `✅ Order Placed Successfully!\n\n` +
-                    `Order ID: ${result.id}\n\n` +
-                    `You can track your order anytime using this Order ID.\n` +
-                    `Visit the "Track Order" page to see real-time updates.`;
+                setToast({ message: 'Order placed successfully!', type: 'success' });
 
-                if (window.confirm(orderMessage + '\n\nWould you like to track your order now?')) {
-                    // Store the order ID temporarily for auto-filling
-                    sessionStorage.setItem('trackOrderId', result.id);
-                    clearCart();
-                    navigate('/track-order');
-                } else {
-                    clearCart();
-                    navigate('/');
-                }
+                // Show tracking dialog after a short delay
+                setTimeout(() => {
+                    const orderMessage = `✅ Order Placed Successfully!\n\n` +
+                        `Order ID: ${result.id}\n\n` +
+                        `You can track your order anytime using this Order ID.\n` +
+                        `Would you like to track your order now?`;
+
+                    if (window.confirm(orderMessage)) {
+                        sessionStorage.setItem('trackOrderId', result.id);
+                        clearCart();
+                        navigate('/track-order');
+                    } else {
+                        clearCart();
+                        navigate('/');
+                    }
+                }, 1000);
             } else {
                 throw new Error('Failed to save order');
             }
         } catch (error) {
             console.error('Error placing order:', error);
-            alert('Failed to place order. Please try again.');
+            setToast({ message: 'Failed to place order. Please try again.', type: 'error' });
         } finally {
             setLoading(false);
         }
@@ -154,7 +235,7 @@ const Checkout = () => {
     const total = subtotal + deliveryCharge;
 
     if (!user) {
-        return null; // Will redirect to login
+        return null;
     }
 
     return (
@@ -172,12 +253,12 @@ const Checkout = () => {
                             </div>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="checkout-form">
+                        <form onSubmit={handleSubmit} className="checkout-form" noValidate>
                             <div className="form-section">
                                 <h2><Package size={20} /> Delivery Information</h2>
 
                                 <div className="form-row">
-                                    <div className="form-group">
+                                    <div className={`form-group ${errors.fullName ? 'has-error' : ''}`}>
                                         <label htmlFor="fullName">Full Name *</label>
                                         <input
                                             type="text"
@@ -185,12 +266,12 @@ const Checkout = () => {
                                             name="fullName"
                                             value={formData.fullName}
                                             onChange={handleChange}
-                                            required
                                             placeholder="Enter your full name"
                                         />
+                                        {errors.fullName && <span className="error-message">{errors.fullName}</span>}
                                     </div>
 
-                                    <div className="form-group">
+                                    <div className={`form-group ${errors.phone ? 'has-error' : ''}`}>
                                         <label htmlFor="phone">Phone Number *</label>
                                         <input
                                             type="tel"
@@ -198,14 +279,13 @@ const Checkout = () => {
                                             name="phone"
                                             value={formData.phone}
                                             onChange={handleChange}
-                                            required
                                             placeholder="10-digit mobile number"
-                                            pattern="[0-9]{10}"
                                         />
+                                        {errors.phone && <span className="error-message">{errors.phone}</span>}
                                     </div>
                                 </div>
 
-                                <div className="form-group">
+                                <div className={`form-group ${errors.email ? 'has-error' : ''}`}>
                                     <label htmlFor="email">Email Address *</label>
                                     <input
                                         type="email"
@@ -213,26 +293,26 @@ const Checkout = () => {
                                         name="email"
                                         value={formData.email}
                                         onChange={handleChange}
-                                        required
                                         placeholder="your.email@example.com"
                                     />
+                                    {errors.email && <span className="error-message">{errors.email}</span>}
                                 </div>
 
-                                <div className="form-group">
+                                <div className={`form-group ${errors.address ? 'has-error' : ''}`}>
                                     <label htmlFor="address">Complete Address *</label>
                                     <textarea
                                         id="address"
                                         name="address"
                                         value={formData.address}
                                         onChange={handleChange}
-                                        required
                                         placeholder="House No., Building Name, Street, Landmark"
                                         rows="3"
                                     ></textarea>
+                                    {errors.address && <span className="error-message">{errors.address}</span>}
                                 </div>
 
                                 <div className="form-row">
-                                    <div className="form-group">
+                                    <div className={`form-group ${errors.city ? 'has-error' : ''}`}>
                                         <label htmlFor="city">City *</label>
                                         <input
                                             type="text"
@@ -240,12 +320,12 @@ const Checkout = () => {
                                             name="city"
                                             value={formData.city}
                                             onChange={handleChange}
-                                            required
                                             placeholder="City name"
                                         />
+                                        {errors.city && <span className="error-message">{errors.city}</span>}
                                     </div>
 
-                                    <div className="form-group">
+                                    <div className={`form-group ${errors.state ? 'has-error' : ''}`}>
                                         <label htmlFor="state">State *</label>
                                         <input
                                             type="text"
@@ -253,12 +333,12 @@ const Checkout = () => {
                                             name="state"
                                             value={formData.state}
                                             onChange={handleChange}
-                                            required
                                             placeholder="State name"
                                         />
+                                        {errors.state && <span className="error-message">{errors.state}</span>}
                                     </div>
 
-                                    <div className="form-group">
+                                    <div className={`form-group ${errors.pincode ? 'has-error' : ''}`}>
                                         <label htmlFor="pincode">Pincode *</label>
                                         <input
                                             type="text"
@@ -266,10 +346,9 @@ const Checkout = () => {
                                             name="pincode"
                                             value={formData.pincode}
                                             onChange={handleChange}
-                                            required
                                             placeholder="6-digit pincode"
-                                            pattern="[0-9]{6}"
                                         />
+                                        {errors.pincode && <span className="error-message">{errors.pincode}</span>}
                                     </div>
                                 </div>
                             </div>
@@ -377,8 +456,14 @@ const Checkout = () => {
                     </div>
                 </div>
             </div>
+            {toast && <Toast
+                message={toast.message}
+                type={toast.type}
+                onClose={() => setToast(null)}
+            />}
         </div>
     );
 };
 
 export default Checkout;
+
