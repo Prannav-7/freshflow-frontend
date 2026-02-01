@@ -1,6 +1,5 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { products as staticProducts } from '../data/products';
 import { Star, ShoppingCart, Heart, Truck, Shield, ArrowLeft, User } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -100,13 +99,16 @@ const ProductDetail = () => {
   });
   const [submittingReview, setSubmittingReview] = useState(false);
 
+  const [allProducts, setAllProducts] = useState([]);
+
   // Fetch product from Firestore
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const allProducts = await getProducts();
+        const data = await getProducts();
+        setAllProducts(data || []);
         // Handle both string and integer IDs
-        const foundProduct = allProducts.find(p =>
+        const foundProduct = data.find(p =>
           p.id === id || p.id === parseInt(id) || p.id.toString() === id
         );
         setProduct(foundProduct || null);
@@ -177,7 +179,7 @@ const ProductDetail = () => {
   }
 
   const isInCart = cartItems.some(item => item.id === product.id);
-  const relatedProducts = staticProducts
+  const relatedProducts = allProducts
     .filter(p => p.category === product.category && p.id !== product.id)
     .slice(0, 4);
 

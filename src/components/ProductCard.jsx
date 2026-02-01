@@ -67,9 +67,24 @@ const ProductCard = ({ product }) => {
           <span className="category-badge">{product.category}</span>
         </div>
 
-        {product.available && (
-          <div className="product-available">
-            Available: {product.available} units
+        {product.available !== undefined && (
+          <div className="product-available" style={{ color: '#666', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
+            Available: {(() => {
+              // Get unit - auto-detect if missing
+              let unit = product.unit;
+              if (!unit) {
+                const category = (product.category || '').toLowerCase();
+                unit = category.includes('oil') ? 'L' : 'kg';
+              }
+
+              const unitLower = unit.toLowerCase();
+              if (unitLower === 'kg')
+                return `${(product.available * 1000).toFixed(0)} gm (${product.available} kg)`;
+              else if (unitLower === 'l')
+                return `${(product.available * 1000).toFixed(0)} ml (${product.available} L)`;
+              else
+                return `${product.available} ${unit}`;
+            })()}
           </div>
         )}
 
