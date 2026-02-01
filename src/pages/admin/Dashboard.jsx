@@ -45,7 +45,7 @@ const Dashboard = () => {
     const [orders, setOrders] = useState([]);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [timeFilter, setTimeFilter] = useState('week'); // week, month, all
+    const [timeFilter, setTimeFilter] = useState('all'); // week, month, all
     const [showLowStockPopup, setShowLowStockPopup] = useState(false);
     const [lowStockMessage, setLowStockMessage] = useState('');
 
@@ -134,7 +134,9 @@ const Dashboard = () => {
         }
 
         return orders.filter(order => {
-            const orderDate = new Date(order.createdAt);
+            const dateStr = order.createdAt || order.orderDate || order.date;
+            if (!dateStr) return true; // Include if no date
+            const orderDate = new Date(dateStr);
             return orderDate >= startDate;
         });
     };
@@ -157,7 +159,9 @@ const Dashboard = () => {
         const filteredOrders = filterOrdersByTime(orders);
 
         filteredOrders.forEach(order => {
-            const date = new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            const dateStr = order.createdAt || order.orderDate || order.date;
+            if (!dateStr) return;
+            const date = new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             dailySales[date] = (dailySales[date] || 0) + (order.totalAmount || 0);
         });
 
@@ -181,20 +185,11 @@ const Dashboard = () => {
     };
 
     const getTopProducts = () => {
-        const productSales = {};
-        const filteredOrders = filterOrdersByTime(orders);
-
-        filteredOrders.forEach(order => {
-            order.items?.forEach(item => {
-                const key = item.name;
-                productSales[key] = (productSales[key] || 0) + (item.quantity * item.price);
-            });
-        });
-
-        return Object.entries(productSales)
-            .map(([name, revenue]) => ({ name, revenue }))
-            .sort((a, b) => b.revenue - a.revenue)
-            .slice(0, 5);
+        const report = getProductSalesReport();
+        return report.slice(0, 5).map(p => ({
+            name: p.name,
+            quantity: p.quantity
+        }));
     };
 
     // Get detailed product sales report with quantity and revenue
@@ -230,11 +225,11 @@ const Dashboard = () => {
                 // Handle unit conversion if item has size information
                 let quantityToAdd = item.quantity;
                 if (item.size && productSales[key].unit) {
-                    const sizeMatch = item.size.match(/^([\d.]+)\s*(kg|gm|g)$/i);
+                    const sizeMatch = item.size.match(/^([\d.]+)\s*(kg|gm|g|l|ml)$/i);
                     if (sizeMatch) {
                         const sizeValue = parseFloat(sizeMatch[1]);
                         const sizeUnit = sizeMatch[2].toLowerCase();
-                        const productUnit = productSales[key].unit;
+                        const productUnit = productSales[key].unit.toLowerCase();
 
                         // Convert to product's base unit
                         if (productUnit === 'kg') {
@@ -243,8 +238,20 @@ const Dashboard = () => {
                             } else {
                                 quantityToAdd = item.quantity * sizeValue;
                             }
+                        } else if (productUnit === 'l') {
+                            if (sizeUnit === 'ml') {
+                                quantityToAdd = item.quantity * (sizeValue / 1000);
+                            } else {
+                                quantityToAdd = item.quantity * sizeValue;
+                            }
                         } else if (productUnit === 'gm' || productUnit === 'g') {
                             if (sizeUnit === 'kg') {
+                                quantityToAdd = item.quantity * (sizeValue * 1000);
+                            } else {
+                                quantityToAdd = item.quantity * sizeValue;
+                            }
+                        } else if (productUnit === 'ml') {
+                            if (sizeUnit === 'l') {
                                 quantityToAdd = item.quantity * (sizeValue * 1000);
                             } else {
                                 quantityToAdd = item.quantity * sizeValue;
@@ -259,7 +266,7 @@ const Dashboard = () => {
         });
 
         return Object.values(productSales)
-            .sort((a, b) => b.revenue - a.revenue);
+            .sort((a, b) => b.quantity - a.quantity);
     };
 
     // Download Sales Report as CSV
@@ -632,15 +639,15 @@ const Dashboard = () => {
                     <div className="chart-card">
                         <div className="chart-header">
                             <h3>Top Products</h3>
-                            <p>Best sellers by revenue</p>
+                            <p>Best sellers by quantity</p>
                         </div>
                         <ResponsiveContainer width="100%" height={300}>
                             <BarChart data={topProductsData} layout="vertical">
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis type="number" />
                                 <YAxis dataKey="name" type="category" width={100} />
-                                <Tooltip formatter={(value) => `₹${value}`} />
-                                <Bar dataKey="revenue" fill="url(#colorRevenue)" radius={[4, 4, 0, 0]} />
+                                <Tooltip formatter={(value) => [`${value.toFixed(2)}`, 'Quantity Sold']} />
+                                <Bar dataKey="quantity" fill="url(#colorRevenue)" radius={[4, 4, 0, 0]} />
                                 <defs>
                                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="1" y2="0">
                                         <stop offset="0%" stopColor="#667eea" />
@@ -656,7 +663,7 @@ const Dashboard = () => {
                         <div className="chart-header">
                             <div>
                                 <h3><Package size={20} /> Product Sales Report</h3>
-                                <p>Revenue and quantity sold per product</p>
+                                <p>Quantity and revenue sold per product</p>
                             </div>
                             <div className="download-buttons">
                                 <button onClick={downloadCSVReport} className="download-btn csv">
