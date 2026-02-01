@@ -91,7 +91,7 @@ const Products = () => {
     }
 
     setFilteredProducts(filtered);
-  }, [products, selectedCategory, selectedBrands, priceRange, rating, sortBy]);
+  }, [products, selectedCategory, selectedBrands, priceRange, rating, sortBy, searchParams]);
 
   const handleBrandChange = (brand) => {
     setSelectedBrands(prev =>

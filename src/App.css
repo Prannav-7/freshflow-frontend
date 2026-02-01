@@ -2288,6 +2288,9 @@ body {
 
   .header-bottom.open {
     max-height: 400px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    /* Smooth scrolling on iOS */
   }
 
   .main-nav {

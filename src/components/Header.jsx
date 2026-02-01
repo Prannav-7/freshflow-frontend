@@ -53,6 +53,21 @@ const Header = ({ onSearch }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Live search with debouncing - navigate to products page as user types
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      if (searchQuery.trim()) {
+        // Navigate to products page with search query
+        navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+      } else if (searchQuery === '' && window.location.pathname === '/products') {
+        // Clear search if input is empty and on products page
+        navigate('/products');
+      }
+    }, 300); // 300ms delay for debouncing
+
+    return () => clearTimeout(debounceTimer);
+  }, [searchQuery, navigate]);
+
   const handleSearch = (e) => {
     e.preventDefault();
     if (onSearch) {
