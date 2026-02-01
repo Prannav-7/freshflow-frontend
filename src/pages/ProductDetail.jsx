@@ -5,7 +5,7 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import ProductCard from '../components/ProductCard';
 import Toast from '../components/Toast';
-import { addReview, getReviews, canUserReview, getProducts } from '../api';
+import { addReview, getReviews, canUserReview, getProducts, uploadImage } from '../api';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -98,6 +98,8 @@ const ProductDetail = () => {
     comment: ''
   });
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewImage, setReviewImage] = useState(null);
+  const [reviewImagePreview, setReviewImagePreview] = useState(null);
 
   const [allProducts, setAllProducts] = useState([]);
 
@@ -249,6 +251,22 @@ const ProductDetail = () => {
   };
 
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size should be less than 5MB');
+        return;
+      }
+      setReviewImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setReviewImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
 
@@ -266,17 +284,30 @@ const ProductDetail = () => {
     setSubmittingReview(true);
 
     try {
+      let imageUrl = null;
+      if (reviewImage) {
+        const uploadResult = await uploadImage(reviewImage);
+        if (uploadResult.success) {
+          imageUrl = uploadResult.url;
+        } else {
+          console.error('Image upload failed but continuing with review:', uploadResult.error);
+        }
+      }
+
       const result = await addReview({
         productId: product.id.toString(),
         userId: user.uid,
         userName: user.displayName || user.email,
         rating: reviewData.rating,
-        comment: reviewData.comment
+        comment: reviewData.comment,
+        image: imageUrl
       });
 
       if (result.success) {
         alert('Review submitted successfully!');
         setReviewData({ rating: 5, comment: '' });
+        setReviewImage(null);
+        setReviewImagePreview(null);
 
         // Refresh reviews
         const productReviews = await getReviews(product.id.toString());
@@ -514,6 +545,52 @@ const ProductDetail = () => {
                   />
                 </div>
 
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
+                    Add a Photo (Optional)
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    style={{ marginBottom: '0.5rem' }}
+                  />
+                  {reviewImagePreview && (
+                    <div style={{ position: 'relative', width: '100px', height: '100px', marginTop: '0.5rem' }}>
+                      <img
+                        src={reviewImagePreview}
+                        alt="Preview"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px' }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setReviewImage(null);
+                          setReviewImagePreview(null);
+                        }}
+                        style={{
+                          position: 'absolute',
+                          top: '-8px',
+                          right: '-8px',
+                          background: '#ef4444',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '50%',
+                          width: '20px',
+                          height: '20px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          fontSize: '12px'
+                        }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  )}
+                </div>
+
                 <button
                   type="submit"
                   disabled={submittingReview}
@@ -590,6 +667,22 @@ const ProductDetail = () => {
                     </div>
                   </div>
                   <p style={{ color: '#666', margin: 0 }}>{review.comment}</p>
+                  {review.image && (
+                    <div style={{ marginTop: '1rem' }}>
+                      <img
+                        src={review.image}
+                        alt="Review attachment"
+                        style={{
+                          maxWidth: '200px',
+                          maxHeight: '200px',
+                          borderRadius: '8px',
+                          cursor: 'pointer',
+                          border: '1px solid #eee'
+                        }}
+                        onClick={() => window.open(review.image, '_blank')}
+                      />
+                    </div>
+                  )}
                   <small style={{ color: '#999', display: 'block', marginTop: '0.5rem' }}>
                     {new Date(review.createdAt).toLocaleDateString()}
                   </small>
