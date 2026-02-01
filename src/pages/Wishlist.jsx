@@ -141,13 +141,22 @@ const Wishlist = () => {
                                             )}
                                         </div>
 
-                                        <button
-                                            className="btn-add-to-cart"
-                                            onClick={() => handleAddToCart(product)}
-                                        >
-                                            <ShoppingCart size={18} />
-                                            Add to Cart
-                                        </button>
+                                        <div className="wishlist-item-buttons">
+                                            <button
+                                                className="btn-add-to-cart"
+                                                onClick={() => handleAddToCart(product)}
+                                            >
+                                                <ShoppingCart size={18} />
+                                                Add to Cart
+                                            </button>
+                                            <button
+                                                className="btn-remove-item"
+                                                onClick={() => handleRemoveFromWishlist(product.id)}
+                                            >
+                                                <Trash2 size={18} />
+                                                Remove
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

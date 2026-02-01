@@ -98,11 +98,12 @@ const Cart = () => {
                   </div>
 
                   <button
-                    className="remove-btn"
+                    className="remove-btn cart-remove-btn"
                     onClick={() => removeFromCart(item.id, item.selectedSize)}
                     aria-label="Remove item"
                   >
                     <Trash2 size={18} />
+                    <span>Remove</span>
                   </button>
                 </div>
               </div>

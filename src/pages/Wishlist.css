@@ -251,8 +251,8 @@
 /* Item Footer */
 .wishlist-item-footer {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    gap: 0.75rem;
     margin-top: auto;
     padding-top: 1rem;
     border-top: 1px solid #e0e0e0;
@@ -260,35 +260,49 @@
 
 .wishlist-item-price {
     display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
+    align-items: baseline;
+    gap: 0.5rem;
 }
 
 .wishlist-item-price .price {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 700;
     color: var(--primary-color);
 }
 
 .wishlist-item-price .original-price {
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: var(--text-secondary);
     text-decoration: line-through;
+}
+
+
+.wishlist-item-buttons {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
 }
 
 .btn-add-to-cart {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.25rem;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1rem;
     background: var(--primary-color);
     color: white;
     border: none;
-    border-radius: 8px;
-    font-size: 0.9rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
+    flex: 1;
+}
+
+.btn-add-to-cart svg {
+    width: 16px;
+    height: 16px;
 }
 
 .btn-add-to-cart:hover {
@@ -296,6 +310,36 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(45, 106, 79, 0.3);
 }
+
+.btn-remove-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1rem;
+    background: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+}
+
+.btn-remove-item svg {
+    width: 16px;
+    height: 16px;
+}
+
+.btn-remove-item:hover {
+    background: #cc0000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 68, 68, 0.4);
+}
+
+
 
 /* Wishlist Actions */
 .wishlist-actions {
@@ -350,7 +394,13 @@
         align-items: stretch;
     }
 
-    .btn-add-to-cart {
+    .wishlist-item-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn-add-to-cart,
+    .btn-remove-item {
         width: 100%;
         justify-content: center;
     }
