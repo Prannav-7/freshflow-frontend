@@ -61,6 +61,43 @@
     color: #2d6a4f;
 }
 
+/* Date Range Picker */
+.date-range-picker {
+    display: flex;
+    gap: 15px;
+    background: white;
+    padding: 10px 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    align-items: center;
+}
+
+.date-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.date-input label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.date-input input {
+    padding: 8px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #495057;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.date-input input:focus {
+    border-color: #2d6a4f;
+}
+
 /* Header Actions Group */
 .header-actions-group {
     display: flex;
@@ -766,6 +803,32 @@
 }
 
 /* Product Sales Report Table */
+.report-summary {
+    background: #f8f9fa;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border-left: 4px solid #667eea;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.summary-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 14px;
+}
+
+.summary-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #667eea;
+}
+
 .product-sales-report {
     margin-top: 1.5rem;
 }

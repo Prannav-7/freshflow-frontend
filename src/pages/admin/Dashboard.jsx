@@ -48,6 +48,8 @@ const Dashboard = () => {
     const [timeFilter, setTimeFilter] = useState('all'); // week, month, all
     const [showLowStockPopup, setShowLowStockPopup] = useState(false);
     const [lowStockMessage, setLowStockMessage] = useState('');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
 
     useEffect(() => {
         //  Check if user is admin
@@ -68,7 +70,7 @@ const Dashboard = () => {
 
         setUser(userData);
         fetchDashboardData();
-    }, [navigate, timeFilter]);
+    }, [navigate, timeFilter, startDate, endDate]);
 
     const fetchDashboardData = async () => {
         try {
@@ -120,14 +122,32 @@ const Dashboard = () => {
         if (!orders || orders.length === 0) return [];
 
         const now = new Date();
-        let startDate;
+        let start;
+        let end = new Date(now.setHours(23, 59, 59, 999));
+
+        if (timeFilter === 'custom') {
+            if (!startDate && !endDate) return orders;
+
+            start = startDate ? new Date(startDate) : new Date(0);
+            start.setHours(0, 0, 0, 0);
+
+            end = endDate ? new Date(endDate) : new Date();
+            end.setHours(23, 59, 59, 999);
+
+            return orders.filter(order => {
+                const dateStr = order.createdAt || order.orderDate || order.date;
+                if (!dateStr) return false;
+                const orderDate = new Date(dateStr);
+                return orderDate >= start && orderDate <= end;
+            });
+        }
 
         switch (timeFilter) {
             case 'week':
-                startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                start = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
                 break;
             case 'month':
-                startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                start = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
                 break;
             default:
                 return orders;
@@ -137,13 +157,13 @@ const Dashboard = () => {
             const dateStr = order.createdAt || order.orderDate || order.date;
             if (!dateStr) return true; // Include if no date
             const orderDate = new Date(dateStr);
-            return orderDate >= startDate;
+            return orderDate >= start;
         });
     };
 
     const calculateStats = (filteredOrders, products) => {
         const revenue = filteredOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
-        const uniqueCustomers = new Set(filteredOrders.map(order => order.userId)).size;
+        const uniqueCustomers = new Set(filteredOrders.map(order => order.userId).filter(Boolean)).size;
 
         setStats({
             totalRevenue: revenue,
@@ -269,6 +289,38 @@ const Dashboard = () => {
             .sort((a, b) => b.quantity - a.quantity);
     };
 
+    // Get detailed unique customer report
+    const getUniqueCustomerDetails = () => {
+        const filteredOrders = filterOrdersByTime(orders);
+        const customers = {};
+
+        filteredOrders.forEach(order => {
+            const uid = order.userId || order.userEmail || order.shippingAddress?.email || 'Guest';
+            if (!customers[uid]) {
+                const name = order.userName || order.shippingAddress?.fullName || 'Guest';
+                customers[uid] = {
+                    uid,
+                    name: name,
+                    email: order.userEmail || order.shippingAddress?.email || 'N/A',
+                    phone: order.shippingAddress?.phone || 'N/A',
+                    orderCount: 0,
+                    totalSpent: 0,
+                    lastOrder: order.createdAt || order.orderDate
+                };
+            }
+            customers[uid].orderCount += 1;
+            customers[uid].totalSpent += (order.totalAmount || 0);
+
+            const currentOrderDate = new Date(order.createdAt || order.orderDate);
+            const lastOrderDate = new Date(customers[uid].lastOrder);
+            if (currentOrderDate > lastOrderDate) {
+                customers[uid].lastOrder = order.createdAt || order.orderDate;
+            }
+        });
+
+        return Object.values(customers).sort((a, b) => b.totalSpent - a.totalSpent);
+    };
+
     // Download Sales Report as CSV
     const downloadCSVReport = () => {
         const reportData = getProductSalesReport();
@@ -281,11 +333,12 @@ const Dashboard = () => {
         // Create CSV content
         let csv = 'Fresh Flow - Sales Report\n';
         csv += `Generated: ${new Date().toLocaleString()}\n`;
-        csv += `Period: ${timeFilter.toUpperCase()}\n`;
+        csv += `Period: ${timeFilter === 'custom' ? `${startDate || 'Start'} to ${endDate || 'End'}` : timeFilter.toUpperCase()}\n`;
         csv += `\n`;
         csv += `Summary:\n`;
         csv += `Total Revenue,₹${totalRevenue.toLocaleString()}\n`;
         csv += `Total Orders,${totalOrders}\n`;
+        csv += `Unique Customers,${new Set(filteredOrders.map(o => o.userId)).size}\n`;
         csv += `Total Products Sold,${reportData.length}\n`;
         csv += `\n`;
         csv += `Detailed Product Sales:\n`;
@@ -327,7 +380,7 @@ const Dashboard = () => {
         tempDiv.innerHTML = `
             <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #667eea; padding-bottom: 15px;">
                 <h1 style="color: #667eea; font-size: 28px; margin-bottom: 5px;">🌿 Fresh Flow - Sales Report</h1>
-                <p style="color: #666; font-size: 14px;">Period: ${timeFilter.toUpperCase()} | Generated: ${new Date().toLocaleString()}</p>
+                <p style="color: #666; font-size: 14px;">Period: ${timeFilter === 'custom' ? `${startDate || 'Start'} to ${endDate || 'End'}` : timeFilter.toUpperCase()} | Generated: ${new Date().toLocaleString()}</p>
             </div>
             
             <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
@@ -340,6 +393,10 @@ const Dashboard = () => {
                     <div style="text-align: center;">
                         <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Total Orders</div>
                         <div style="font-size: 20px; color: #667eea; font-weight: bold;">${totalOrders}</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Unique Customers</div>
+                        <div style="font-size: 20px; color: #667eea; font-weight: bold;">${new Set(filteredOrders.map(o => o.userId)).size}</div>
                     </div>
                     <div style="text-align: center;">
                         <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Products Sold</div>
@@ -473,7 +530,33 @@ const Dashboard = () => {
                                 >
                                     All Time
                                 </button>
+                                <button
+                                    className={timeFilter === 'custom' ? 'active' : ''}
+                                    onClick={() => setTimeFilter('custom')}
+                                >
+                                    Custom Range
+                                </button>
                             </div>
+                            {timeFilter === 'custom' && (
+                                <div className="date-range-picker">
+                                    <div className="date-input">
+                                        <label>From:</label>
+                                        <input
+                                            type="date"
+                                            value={startDate}
+                                            onChange={(e) => setStartDate(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="date-input">
+                                        <label>To:</label>
+                                        <input
+                                            type="date"
+                                            value={endDate}
+                                            onChange={(e) => setEndDate(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -676,6 +759,12 @@ const Dashboard = () => {
                                 </button>
                             </div>
                         </div>
+                        <div className="report-summary">
+                            <div className="summary-item">
+                                <span className="summary-label">Total Unique Customers in this Period:</span>
+                                <span className="summary-value">{new Set(filterOrdersByTime(orders).map(o => o.userId).filter(Boolean)).size}</span>
+                            </div>
+                        </div>
                         <div className="product-sales-report">
                             <div className="product-sales-table-wrapper">
                                 <table className="product-sales-table">
@@ -708,6 +797,46 @@ const Dashboard = () => {
                                 </table>
                             </div>
                         </div>
+
+                        {/* Unique Customers Details Section */}
+                        <div className="report-summary" style={{ marginTop: '2rem' }}>
+                            <div className="chart-header">
+                                <div>
+                                    <h3><Users size={20} /> Unique Customers Details</h3>
+                                    <p>Comprehensive list of buyers for the selected period</p>
+                                </div>
+                            </div>
+                            <div className="product-sales-table-wrapper">
+                                <table className="product-sales-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Customer Name</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Orders</th>
+                                            <th>Total Spent</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {getUniqueCustomerDetails().length > 0 ? (
+                                            getUniqueCustomerDetails().map((customer) => (
+                                                <tr key={customer.uid}>
+                                                    <td className="product-name">{customer.name}</td>
+                                                    <td>{customer.email}</td>
+                                                    <td>{customer.phone}</td>
+                                                    <td style={{ textAlign: 'center' }}>{customer.orderCount}</td>
+                                                    <td className="revenue-amount">₹{customer.totalSpent.toLocaleString()}</td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan="5" style={{ textAlign: 'center', padding: '2rem' }}>No customer data found for this period</td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -728,7 +857,7 @@ const Dashboard = () => {
 
                 {/* Recent Orders Table */}
                 <div className="recent-orders">
-                    <h3>Recent Orders</h3>
+                    <h3>{timeFilter === 'all' ? 'Recent Orders' : `Orders in Period (${filterOrdersByTime(orders).length})`}</h3>
                     <div className="orders-table-wrapper">
                         <table className="orders-table">
                             <thead>
@@ -742,7 +871,7 @@ const Dashboard = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {orders.slice(0, 10).map(order => (
+                                {filterOrdersByTime(orders).slice(0, 10).map(order => (
                                     <tr key={order.id}>
                                         <td>#{order.id?.substring(0, 8)}</td>
                                         <td>{order.userName || 'Guest'}</td>
