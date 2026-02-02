@@ -215,8 +215,8 @@ const Header = ({ onSearch }) => {
             <Link to="/contact" onClick={() => setMenuOpen(false)}>Contact</Link>
             <Link to="/track-order" className="track-order-link" onClick={() => setMenuOpen(false)}>📦 Track Order</Link>
 
-            {/* Admin Dashboard Link - Only visible to admin users */}
-            {user && ['psujeeth02@gmail.com', 'prannavp803@gmail.com'].includes(user.email) && (
+            {/* Admin Dashboard Link - Visible to any admin user */}
+            {user && (user.role === 'admin' || ['psujeeth02@gmail.com', 'prannavp803@gmail.com', 'info.iyarkaivalari@gmail.com'].includes(user.email)) && (
               <Link to="/admin/dashboard" className="admin-nav-link" onClick={() => setMenuOpen(false)}>
                 🔧 Admin Dashboard
               </Link>

@@ -75,7 +75,11 @@ function Login() {
                     }
                 }, 500); // Short delay just to show success message
             } else {
-                setError(data.error || 'Sign up failed');
+                let msg = data.error || 'Sign up failed';
+                if (data.code === 'auth/email-already-in-use') {
+                    msg = "This email is already registered. Please go to 'Sign In' instead.";
+                }
+                setError(msg);
             }
         } catch (err) {
             setError('Error connecting to server: ' + err.message);
@@ -131,7 +135,11 @@ function Login() {
                     }
                 }, 1000);
             } else {
-                setError(data.error || 'Login failed');
+                let msg = data.error || 'Login failed';
+                if (response.status === 401) {
+                    msg = "Incorrect password or account was created via Google. Try 'Continue with Google'.";
+                }
+                setError(msg);
             }
         } catch (err) {
             setError('Error connecting to server: ' + err.message);

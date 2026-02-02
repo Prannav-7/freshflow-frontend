@@ -60,10 +60,11 @@ const Dashboard = () => {
         }
 
         const userData = JSON.parse(savedUser);
-        const adminEmails = ['psujeeth02@gmail.com', 'prannavp803@gmail.com'];
 
-        if (!adminEmails.includes(userData.email)) {
-            alert('Access denied. Admin only.');
+        // Check if user has admin role or is in the fallback admin list
+        const fallbackAdmins = ['psujeeth02@gmail.com', 'prannavp803@gmail.com', 'info.iyarkaivalari@gmail.com'];
+        if (userData.role !== 'admin' && !fallbackAdmins.includes(userData.email)) {
+            // Redirect to home page without alert for non-admin users
             navigate('/');
             return;
         }

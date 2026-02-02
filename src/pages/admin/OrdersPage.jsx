@@ -25,8 +25,9 @@ const OrdersPage = () => {
 
         const userData = JSON.parse(savedUser);
 
-        // Check if user email is in allowed admin emails
-        if (!ADMIN_EMAILS.includes(userData.email)) {
+        // Check if user has admin role or is in the fallback admin list
+        const fallbackAdmins = ['psujeeth02@gmail.com', 'prannavp803@gmail.com', 'info.iyarkaivalari@gmail.com'];
+        if (userData.role !== 'admin' && !fallbackAdmins.includes(userData.email)) {
             // Redirect to home page without alert for non-admin users
             navigate('/');
             return;
