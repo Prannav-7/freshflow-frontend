@@ -144,6 +144,9 @@ const Checkout = () => {
             const deliveryCharge = subtotal >= 500 ? 0 : 50;
             const total = subtotal + deliveryCharge;
 
+            // Define API URL for backend requests
+            const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://fresh-flow-fa56.onrender.com';
+
             // Prepare order data for Firebase
             const orderData = {
                 userId: user.uid,
@@ -181,7 +184,6 @@ const Checkout = () => {
             if (result.success) {
                 // Reduce stock for ordered items
                 try {
-                    const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://fresh-flow-fa56.onrender.com';
                     const stockItems = cartItems.map(item => ({
                         id: item.docId || item.id?.toString(), // Use docId if available, fallback to numeric id
                         quantity: item.quantity,
@@ -201,6 +203,49 @@ const Checkout = () => {
                     }
                 } catch (stockError) {
                     console.error('Error reducing stock:', stockError);
+                }
+
+                // Send order confirmation email
+                try {
+                    const emailData = {
+                        customerEmail: formData.email,
+                        customerName: formData.fullName,
+                        orderId: result.id,
+                        items: cartItems.map(item => ({
+                            name: item.name,
+                            quantity: item.quantity,
+                            price: item.price,
+                            selectedSize: item.selectedSize
+                        })),
+                        totalAmount: total,
+                        shippingAddress: {
+                            fullName: formData.fullName,
+                            email: formData.email,
+                            phone: formData.phone,
+                            address: formData.address,
+                            city: formData.city,
+                            state: formData.state,
+                            pincode: formData.pincode
+                        },
+                        orderDate: new Date().toISOString()
+                    };
+
+                    console.log('Sending order confirmation email...');
+
+                    const emailResponse = await fetch(`${API_BASE_URL}/api/email/order-confirmation`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(emailData)
+                    });
+
+                    if (emailResponse.ok) {
+                        console.log('✅ Order confirmation email sent successfully');
+                    } else {
+                        console.warn('⚠️ Email notification failed, but order was placed successfully');
+                    }
+                } catch (emailError) {
+                    console.error('Error sending email:', emailError);
+                    // Don't fail the order if email fails
                 }
 
                 setToast({ message: 'Order placed successfully!', type: 'success' });
