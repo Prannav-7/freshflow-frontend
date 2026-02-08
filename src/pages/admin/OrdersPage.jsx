@@ -35,6 +35,14 @@ const OrdersPage = () => {
 
         setUser(userData);
         fetchOrders();
+
+        // Set up auto-refresh every 10 seconds to catch order cancellations
+        const intervalId = setInterval(() => {
+            fetchOrders();
+        }, 10000);
+
+        // Cleanup interval on unmount
+        return () => clearInterval(intervalId);
     }, [navigate]);
 
     const fetchOrders = async () => {
@@ -57,10 +65,8 @@ const OrdersPage = () => {
         try {
             const result = await updateOrder(orderId, { status: newStatus });
             if (result.success) {
-                // Update the order in the local state
-                setOrders(orders.map(order =>
-                    order.id === orderId ? { ...order, status: newStatus } : order
-                ));
+                // Immediately refresh orders to get the latest status
+                await fetchOrders();
                 alert('Order status updated successfully!');
             } else {
                 alert('Failed to update order status: ' + result.error);
@@ -99,9 +105,14 @@ const OrdersPage = () => {
                     <h1><ShoppingBag size={32} /> Orders Management</h1>
                     <p>View and manage all customer orders</p>
                 </div>
-                <button onClick={() => navigate('/admin/dashboard')} className="back-btn">
-                    ← Back to Dashboard
-                </button>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                    <button onClick={fetchOrders} className="back-btn" style={{ background: '#22c55e' }}>
+                        🔄 Refresh
+                    </button>
+                    <button onClick={() => navigate('/admin/dashboard')} className="back-btn">
+                        ← Back to Dashboard
+                    </button>
+                </div>
             </div>
 
             <div className="op-controls">
@@ -200,6 +211,30 @@ const OrdersPage = () => {
                                         <span className="info-value">₹{order.totalAmount?.toLocaleString()}</span>
                                     </div>
                                 </div>
+
+                                {/* Cancellation Notice */}
+                                {(order.status === 'Cancelled' || order.status === 'cancelled') && (
+                                    <div style={{
+                                        background: '#fee2e2',
+                                        border: '2px solid #ef4444',
+                                        borderRadius: '8px',
+                                        padding: '1rem',
+                                        marginTop: '1rem',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.75rem'
+                                    }}>
+                                        <div style={{
+                                            fontSize: '2rem'
+                                        }}>⚠️</div>
+                                        <div>
+                                            <strong style={{ color: '#dc2626', fontSize: '1.1rem' }}>ORDER CANCELLED</strong>
+                                            <p style={{ margin: '0.25rem 0 0 0', color: '#991b1b', fontSize: '0.9rem' }}>
+                                                This order has been cancelled by the customer. Stock has been restored.
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
 
                                 <div className="order-items-preview">
                                     <h4>Order Items:</h4>

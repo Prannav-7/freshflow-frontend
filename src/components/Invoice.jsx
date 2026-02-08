@@ -53,8 +53,8 @@ const Invoice = ({ order, onClose }) => {
                         <div className="company-info">
                             <h1>🌿 Fresh Flow</h1>
                             <p>Premium Organic Products</p>
-                            <p>123 Organic Lane, Green City, GC 123456</p>
-                            <p>Email: support@freshflow.com | Phone: +91 98765 43210</p>
+                            <p>15-A, Kamaraj Salai, Anna Nagar, Chennai - 600040, Tamil Nadu</p>
+                            <p>Email:info.iyarkaivalari@gmail.com | Phone: +91 9976238446</p>
                         </div>
                         <div className="invoice-meta">
                             <h2>TAX INVOICE</h2>
