@@ -35,14 +35,6 @@ const OrdersPage = () => {
 
         setUser(userData);
         fetchOrders();
-
-        // Set up auto-refresh every 10 seconds to catch order cancellations
-        const intervalId = setInterval(() => {
-            fetchOrders();
-        }, 10000);
-
-        // Cleanup interval on unmount
-        return () => clearInterval(intervalId);
     }, [navigate]);
 
     const fetchOrders = async () => {
