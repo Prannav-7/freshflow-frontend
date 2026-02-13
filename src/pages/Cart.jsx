@@ -53,7 +53,7 @@ const Cart = () => {
         <div className="cart-content">
           <div className="cart-items">
             {cartItems.map(item => (
-              <div key={`${item.id}-${item.selectedSize || 'default'}`} className="cart-item">
+              <div key={String(item.id)} className="cart-item">
                 <Link to={`/product/${item.id}`} className="cart-item-image">
                   <img src={item.image} alt={item.name} />
                 </Link>
@@ -79,14 +79,14 @@ const Cart = () => {
                 <div className="cart-item-actions">
                   <div className="quantity-control">
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1, item.selectedSize)}
+                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
                       aria-label="Decrease quantity"
                     >
                       <Minus size={16} />
                     </button>
                     <span>{item.quantity}</span>
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1, item.selectedSize)}
+                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
                       aria-label="Increase quantity"
                     >
                       <Plus size={16} />
@@ -99,7 +99,7 @@ const Cart = () => {
 
                   <button
                     className="remove-btn cart-remove-btn"
-                    onClick={() => removeFromCart(item.id, item.selectedSize)}
+                    onClick={() => removeFromCart(item.id)}
                     aria-label="Remove item"
                   >
                     <Trash2 size={18} />

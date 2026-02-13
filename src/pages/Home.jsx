@@ -132,19 +132,19 @@ const Home = () => {
           <h2 className="section-title">Shop by Category</h2>
           <div className="categories-grid">
             <Link to="/products?category=Rice" className="category-card">
-              <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400" alt="Rice" />
+              <img src="assets/images/rice.jpg" alt="Rice" />
               <h3>Traditional Rice</h3>
             </Link>
             <Link to="/products?category=Oil" className="category-card">
-              <img src="https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400" alt="Oils" />
+              <img src="assets/images/oil.jpg" alt="Oils" />
               <h3>Cold-Pressed Oils</h3>
             </Link>
             <Link to="/products?category=Grains" className="category-card">
-              <img src="https://images.unsplash.com/photo-1590779033100-9f60a05a013d?w=400" alt="Grains" />
+              <img src="assets/images/millet.jpg" alt="Grains" />
               <h3>Millets & Grains</h3>
             </Link>
             <Link to="/products?category=Powder" className="category-card">
-              <img src="https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=400" alt="Powders" />
+              <img src="assets/images/powder.jpg" alt="Powders" />
               <h3>Natural Powders</h3>
             </Link>
           </div>

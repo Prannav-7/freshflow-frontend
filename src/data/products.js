@@ -23,7 +23,7 @@ export const products = [
     originalPrice: 180,
     rating: 4.6,
     reviews: 189,
-    image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400",
+    image: "https://images.unsplash.com/ photo-1586201375761-83865001e31c?w=400",
     description: "Premium quality Seeraga Samba rice, aromatic and perfect for biryani.",
     inStock: true,
     available: 46,

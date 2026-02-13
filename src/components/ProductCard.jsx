@@ -7,7 +7,7 @@ const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const { addToCart, cartItems } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
-  const isInCart = cartItems.some(item => item.id === product.id);
+  const isInCart = cartItems.some(item => String(item.id) === String(product.id));
   const inWishlist = isInWishlist(product.id);
 
   const handleAddToCart = () => {
@@ -24,8 +24,9 @@ const ProductCard = ({ product }) => {
       return;
     }
 
-    // User is logged in, add to cart
-    addToCart(product);
+    // User is logged in, add to cart with default size if multiple exist
+    const defaultSize = product.sizes && product.sizes.length > 0 ? product.sizes[0] : null;
+    addToCart(product, 1, defaultSize);
   };
 
   const handleWishlistToggle = () => {

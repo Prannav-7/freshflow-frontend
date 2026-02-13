@@ -180,7 +180,10 @@ const ProductDetail = () => {
     );
   }
 
-  const isInCart = cartItems.some(item => item.id === product.id);
+  const isInCart = cartItems.some(item =>
+    String(item.id) === String(product.id) &&
+    (selectedSize ? item.selectedSize === selectedSize : !item.selectedSize)
+  );
   const relatedProducts = allProducts
     .filter(p => p.category === product.category && p.id !== product.id)
     .slice(0, 4);
@@ -219,9 +222,8 @@ const ProductDetail = () => {
       selectedSize: selectedSize // Store the selected size
     };
 
-    for (let i = 0; i < quantity; i++) {
-      addToCart(productWithPrice, selectedSize); // Pass product with calculated price
-    }
+    // Pass product with calculated price and actual quantity
+    addToCart(productWithPrice, quantity, selectedSize);
 
     // Show success toast
     setToast({

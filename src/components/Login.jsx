@@ -26,18 +26,130 @@ function Login() {
         displayName: ''
     });
 
-    // Handle input changes
+    const [validationErrors, setValidationErrors] = useState({
+        email: '',
+        password: '',
+        displayName: ''
+    });
+
+    // Validation functions
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email) {
+            return 'Email is required';
+        }
+        if (!emailRegex.test(email)) {
+            return 'Please enter a valid email address';
+        }
+        return '';
+    };
+
+    const validatePassword = (password) => {
+        if (!password) {
+            return 'Password is required';
+        }
+        if (password.length < 6) {
+            return 'Password must be at least 6 characters long';
+        }
+        if (isSignUp) {
+            if (!/[A-Z]/.test(password)) {
+                return 'Password must contain at least one uppercase letter';
+            }
+            if (!/[a-z]/.test(password)) {
+                return 'Password must contain at least one lowercase letter';
+            }
+            if (!/[0-9]/.test(password)) {
+                return 'Password must contain at least one number';
+            }
+        }
+        return '';
+    };
+
+    const validateDisplayName = (name) => {
+        if (!name) {
+            return 'Display name is required';
+        }
+        if (name.trim().length < 2) {
+            return 'Display name must be at least 2 characters long';
+        }
+        if (name.trim().length > 50) {
+            return 'Display name must not exceed 50 characters';
+        }
+        if (!/^[a-zA-Z\s]+$/.test(name)) {
+            return 'Display name can only contain letters and spaces';
+        }
+        return '';
+    };
+
+    const getPasswordStrength = (password) => {
+        if (!password) return { strength: 'none', color: 'transparent', text: '' };
+
+        let strength = 0;
+        if (password.length >= 6) strength++;
+        if (password.length >= 8) strength++;
+        if (/[A-Z]/.test(password)) strength++;
+        if (/[a-z]/.test(password)) strength++;
+        if (/[0-9]/.test(password)) strength++;
+        if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+        if (strength <= 2) {
+            return { strength: 'weak', color: '#ff4444', text: 'Weak' };
+        } else if (strength <= 4) {
+            return { strength: 'medium', color: '#ffbb33', text: 'Medium' };
+        } else {
+            return { strength: 'strong', color: '#00C851', text: 'Strong' };
+        }
+    };
+
+    // Handle input changes with real-time validation
     const handleChange = (e) => {
+        const { name, value } = e.target;
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value
+            [name]: value
         });
         setError(null);
+
+        // Real-time validation
+        let validationError = '';
+        if (name === 'email') {
+            validationError = validateEmail(value);
+        } else if (name === 'password') {
+            validationError = validatePassword(value);
+        } else if (name === 'displayName' && isSignUp) {
+            validationError = validateDisplayName(value);
+        }
+
+        setValidationErrors({
+            ...validationErrors,
+            [name]: validationError
+        });
+    };
+
+    // Validate entire form before submission
+    const validateForm = () => {
+        const errors = {
+            email: validateEmail(formData.email),
+            password: validatePassword(formData.password),
+            displayName: isSignUp ? validateDisplayName(formData.displayName) : ''
+        };
+
+        setValidationErrors(errors);
+
+        // Return true if no errors
+        return !Object.values(errors).some(error => error !== '');
     };
 
     // Handle Sign Up
     const handleSignUp = async (e) => {
         e.preventDefault();
+
+        // Validate form before submission
+        if (!validateForm()) {
+            setError('Please fix the validation errors before submitting');
+            return;
+        }
+
         setLoading(true);
         setError(null);
 
@@ -50,6 +162,7 @@ function Login() {
 
 
             const data = await response.json();
+            console.log('Signup response:', { status: response.status, data });
 
             if (data.success) {
                 setSuccess('Account created successfully! Redirecting...');
@@ -64,6 +177,7 @@ function Login() {
 
                 // Clear the form
                 setFormData({ email: '', password: '', displayName: '' });
+                setValidationErrors({ email: '', password: '', displayName: '' });
 
                 // Redirect immediately to home or saved path
                 setTimeout(() => {
@@ -75,6 +189,7 @@ function Login() {
                     }
                 }, 500); // Short delay just to show success message
             } else {
+                console.warn('Signup rejected by server:', data);
                 let msg = data.error || 'Sign up failed';
                 if (data.code === 'auth/email-already-in-use') {
                     msg = "This email is already registered. Please go to 'Sign In' instead.";
@@ -82,6 +197,7 @@ function Login() {
                 setError(msg);
             }
         } catch (err) {
+            console.error('Signup connection error:', err);
             setError('Error connecting to server: ' + err.message);
         } finally {
             setLoading(false);
@@ -91,6 +207,21 @@ function Login() {
     // Handle Sign In
     const handleSignIn = async (e) => {
         e.preventDefault();
+
+        // Validate email and password
+        const emailError = validateEmail(formData.email);
+        const passwordError = formData.password ? '' : 'Password is required';
+
+        if (emailError || passwordError) {
+            setValidationErrors({
+                ...validationErrors,
+                email: emailError,
+                password: passwordError
+            });
+            setError('Please enter valid credentials');
+            return;
+        }
+
         setLoading(true);
         setError(null);
 
@@ -105,6 +236,7 @@ function Login() {
             });
 
             const data = await response.json();
+            console.log('Signin response:', { status: response.status, data });
 
             if (data.success) {
                 setSuccess('Login successful!');
@@ -115,6 +247,7 @@ function Login() {
                 window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: data.user }));
 
                 setFormData({ email: '', password: '', displayName: '' });
+                setValidationErrors({ email: '', password: '', displayName: '' });
 
                 // Check for redirect path
                 const redirectPath = localStorage.getItem('redirectAfterLogin');
@@ -135,6 +268,7 @@ function Login() {
                     }
                 }, 1000);
             } else {
+                console.warn('Signin rejected by server:', data);
                 let msg = data.error || 'Login failed';
                 if (response.status === 401) {
                     msg = "Incorrect password or account was created via Google. Try 'Continue with Google'.";
@@ -142,6 +276,7 @@ function Login() {
                 setError(msg);
             }
         } catch (err) {
+            console.error('Signin connection error:', err);
             setError('Error connecting to server: ' + err.message);
         } finally {
             setLoading(false);
@@ -287,8 +422,11 @@ function Login() {
                                 value={formData.displayName}
                                 onChange={handleChange}
                                 placeholder="Enter your name"
-                                required
+                                className={validationErrors.displayName ? 'input-error' : ''}
                             />
+                            {validationErrors.displayName && (
+                                <span className="error-message">{validationErrors.displayName}</span>
+                            )}
                         </div>
                     )}
 
@@ -301,8 +439,11 @@ function Login() {
                             value={formData.email}
                             onChange={handleChange}
                             placeholder="Enter your email"
-                            required
+                            className={validationErrors.email ? 'input-error' : ''}
                         />
+                        {validationErrors.email && (
+                            <span className="error-message">{validationErrors.email}</span>
+                        )}
                     </div>
 
                     <div className="form-group">
@@ -315,8 +456,7 @@ function Login() {
                                 value={formData.password}
                                 onChange={handleChange}
                                 placeholder="Enter your password"
-                                minLength="6"
-                                required
+                                className={validationErrors.password ? 'input-error' : ''}
                             />
                             <button
                                 type="button"
@@ -327,6 +467,31 @@ function Login() {
                                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                             </button>
                         </div>
+                        {validationErrors.password && (
+                            <span className="error-message">{validationErrors.password}</span>
+                        )}
+                        {isSignUp && formData.password && !validationErrors.password && (
+                            <div className="password-strength">
+                                <div className="strength-bar-container">
+                                    <div
+                                        className="strength-bar"
+                                        style={{
+                                            width: getPasswordStrength(formData.password).strength === 'weak' ? '33%' :
+                                                getPasswordStrength(formData.password).strength === 'medium' ? '66%' : '100%',
+                                            backgroundColor: getPasswordStrength(formData.password).color
+                                        }}
+                                    ></div>
+                                </div>
+                                <span className="strength-text" style={{ color: getPasswordStrength(formData.password).color }}>
+                                    Password Strength: {getPasswordStrength(formData.password).text}
+                                </span>
+                            </div>
+                        )}
+                        {isSignUp && (
+                            <p className="password-requirements">
+                                Password must be at least 6 characters and contain uppercase, lowercase, and a number
+                            </p>
+                        )}
                     </div>
 
                     {error && <div className="alert alert-error">{error}</div>}
@@ -381,6 +546,8 @@ function Login() {
                                 setIsSignUp(!isSignUp);
                                 setError(null);
                                 setSuccess(null);
+                                setFormData({ email: '', password: '', displayName: '' });
+                                setValidationErrors({ email: '', password: '', displayName: '' });
                             }}
                             className="link-button"
                         >

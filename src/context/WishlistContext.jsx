@@ -22,7 +22,8 @@ export const WishlistProvider = ({ children }) => {
 
     const addToWishlist = (product) => {
         setWishlistItems(prev => {
-            const exists = prev.find(item => item.id === product.id);
+            const productId = String(product.id);
+            const exists = prev.find(item => String(item.id) === productId);
             if (exists) {
                 return prev; // Already in wishlist
             }
@@ -31,11 +32,13 @@ export const WishlistProvider = ({ children }) => {
     };
 
     const removeFromWishlist = (productId) => {
-        setWishlistItems(prev => prev.filter(item => item.id !== productId));
+        const pId = String(productId);
+        setWishlistItems(prev => prev.filter(item => String(item.id) !== pId));
     };
 
     const isInWishlist = (productId) => {
-        return wishlistItems.some(item => item.id === productId);
+        const pId = String(productId);
+        return wishlistItems.some(item => String(item.id) === pId);
     };
 
     const getWishlistCount = () => {
