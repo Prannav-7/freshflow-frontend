@@ -1,12 +1,15 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Star, ShoppingCart, Heart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import Toast from './Toast';
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const { addToCart, cartItems } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const [toast, setToast] = useState(null);
   const isInCart = cartItems.some(item => String(item.id) === String(product.id));
   const inWishlist = isInWishlist(product.id);
 
@@ -18,9 +21,14 @@ const ProductCard = ({ product }) => {
       // Save intended action
       localStorage.setItem('redirectAfterLogin', window.location.pathname);
 
-      // Redirect to login page
-      alert('Please login to add items to cart');
-      navigate('/login');
+      // Redirect to login page after a short delay
+      setToast({
+        type: 'error',
+        message: 'Please login to add items to cart'
+      });
+      setTimeout(() => {
+        navigate('/login');
+      }, 4000);
       return;
     }
 
@@ -125,6 +133,13 @@ const ProductCard = ({ product }) => {
           {isInCart ? 'Added to Cart' : product.inStock ? 'Add to Cart' : 'Out of Stock'}
         </button>
       </div>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

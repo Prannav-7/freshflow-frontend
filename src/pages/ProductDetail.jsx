@@ -202,9 +202,14 @@ const ProductDetail = () => {
         size: selectedSize
       }));
 
-      // Redirect to login page
-      alert('Please login to add items to cart');
-      navigate('/login');
+      // Redirect to login page after a short delay
+      setToast({
+        type: 'error',
+        message: 'Please login to add items to cart'
+      });
+      setTimeout(() => {
+        navigate('/login');
+      }, 4000);
       return;
     }
 
@@ -273,13 +278,21 @@ const ProductDetail = () => {
     e.preventDefault();
 
     if (!user) {
-      alert('Please login to submit a review');
-      navigate('/login');
+      setToast({
+        type: 'error',
+        message: 'Please login to submit a review'
+      });
+      setTimeout(() => {
+        navigate('/login');
+      }, 4000);
       return;
     }
 
     if (!canReview) {
-      alert('You must purchase this product before you can review it');
+      setToast({
+        type: 'error',
+        message: 'You must purchase this product before you can review it'
+      });
       return;
     }
 
@@ -306,7 +319,10 @@ const ProductDetail = () => {
       });
 
       if (result.success) {
-        alert('Review submitted successfully!');
+        setToast({
+          type: 'success',
+          message: 'Review submitted successfully!'
+        });
         setReviewData({ rating: 5, comment: '' });
         setReviewImage(null);
         setReviewImagePreview(null);
@@ -316,10 +332,16 @@ const ProductDetail = () => {
         setReviews(productReviews || []);
         setCanReview(false); // User can only review once
       } else {
-        alert(result.error || 'Failed to submit review');
+        setToast({
+          type: 'error',
+          message: result.error || 'Failed to submit review'
+        });
       }
     } catch (error) {
-      alert('Error submitting review. Please try again.');
+      setToast({
+        type: 'error',
+        message: 'Error submitting review. Please try again.'
+      });
     } finally {
       setSubmittingReview(false);
     }

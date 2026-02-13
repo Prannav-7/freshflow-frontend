@@ -3,17 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../firebaseConfig';
+import Toast from './Toast';
 import './Login.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://fresh-flow-fa56.onrender.com';
 const API_URL = `${API_BASE_URL}/api/auth`;
 
-function Login() {
+export default function Login() {
     const navigate = useNavigate();
     const [isSignUp, setIsSignUp] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
+    const [toast, setToast] = useState(null);
     const [showPassword, setShowPassword] = useState(false);
     const [user, setUser] = useState(() => {
         const savedUser = localStorage.getItem('user');
@@ -160,12 +162,12 @@ function Login() {
                 body: JSON.stringify(formData)
             });
 
-
             const data = await response.json();
             console.log('Signup response:', { status: response.status, data });
 
             if (data.success) {
                 setSuccess('Account created successfully! Redirecting...');
+                setToast({ type: 'success', message: `Welcome ${data.user.displayName || 'to Fresh Flow'}! Account created successfully.` });
                 setUser(data.user);
                 localStorage.setItem('user', JSON.stringify(data.user));
 
@@ -187,7 +189,7 @@ function Login() {
                     } else {
                         navigate('/');
                     }
-                }, 500); // Short delay just to show success message
+                }, 4000); // 4 second delay to show success message with user name
             } else {
                 console.warn('Signup rejected by server:', data);
                 let msg = data.error || 'Sign up failed';
@@ -240,6 +242,7 @@ function Login() {
 
             if (data.success) {
                 setSuccess('Login successful!');
+                setToast({ type: 'success', message: `Welcome back, ${data.user.displayName || data.user.email}! Login successful.` });
                 setUser(data.user);
                 localStorage.setItem('user', JSON.stringify(data.user));
 
@@ -266,7 +269,7 @@ function Login() {
                     } else {
                         navigate('/');
                     }
-                }, 1000);
+                }, 4000);
             } else {
                 console.warn('Signin rejected by server:', data);
                 let msg = data.error || 'Login failed';
@@ -307,6 +310,7 @@ function Login() {
 
             if (data.success) {
                 setSuccess('Login successful with Google!');
+                setToast({ type: 'success', message: `Welcome, ${data.user.displayName || 'User'}! Login successful with Google.` });
                 setUser(data.user);
                 localStorage.setItem('user', JSON.stringify(data.user));
 
@@ -324,7 +328,7 @@ function Login() {
                     } else {
                         navigate('/');
                     }
-                }, 1000);
+                }, 4000);
             } else {
                 setError(data.error || 'Google login failed');
             }
@@ -347,7 +351,8 @@ function Login() {
             setUser(null);
             localStorage.removeItem('user');
             setSuccess('Signed out successfully');
-            setTimeout(() => setSuccess(null), 2000);
+            setToast({ type: 'success', message: 'Signed out successfully. Come back soon!' });
+            setTimeout(() => setSuccess(null), 4000);
         } catch (err) {
             setError('Error signing out: ' + err.message);
         }
@@ -398,6 +403,13 @@ function Login() {
 
                     {success && <div className="alert alert-success">{success}</div>}
                 </div>
+                {toast && (
+                    <Toast
+                        message={toast.message}
+                        type={toast.type}
+                        onClose={() => setToast(null)}
+                    />
+                )}
             </div>
         );
     }
@@ -556,8 +568,13 @@ function Login() {
                     </p>
                 </div>
             </div>
+            {toast && (
+                <Toast
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={() => setToast(null)}
+                />
+            )}
         </div>
     );
 }
-
-export default Login;

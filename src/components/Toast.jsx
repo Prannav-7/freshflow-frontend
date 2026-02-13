@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { CheckCircle, X, Heart, ShoppingCart, AlertCircle } from 'lucide-react';
 import './Toast.css';
 
-const Toast = ({ message, type = 'success', onClose, duration = 3000, icon }) => {
+const Toast = ({ message, type = 'success', onClose, duration = 4000, icon }) => {
     useEffect(() => {
         const timer = setTimeout(() => {
             onClose();
