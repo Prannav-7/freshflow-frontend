@@ -1252,6 +1252,21 @@ body {
   border-color: var(--primary-color);
 }
 
+/* Size option when stock can't fulfil even 1 unit */
+.size-option.disabled-size {
+  opacity: 0.45;
+  cursor: not-allowed;
+  border-color: #ddd;
+  color: var(--text-secondary);
+  text-decoration: line-through;
+  background: #f9f9f9;
+}
+
+.size-option.disabled-size:hover {
+  border-color: #ddd;
+  color: var(--text-secondary);
+}
+
 .product-stock {
   margin-bottom: 25px;
 }

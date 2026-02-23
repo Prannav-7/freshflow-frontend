@@ -188,6 +188,43 @@ const ProductDetail = () => {
     .filter(p => p.category === product.category && p.id !== product.id)
     .slice(0, 4);
 
+  // --- Stock helpers ---
+  // Convert a size string to base product units (kg or L)
+  const sizeToBaseUnits = (sizeStr, productUnit) => {
+    if (!sizeStr) return 0;
+    const m = sizeStr.match(/^([\d.]+)\s*(kg|gm|g|l|ml)$/i);
+    if (!m) return 0;
+    const val = parseFloat(m[1]);
+    const unit = m[2].toLowerCase();
+    const pu = productUnit.toLowerCase();
+    if (pu === 'kg') {
+      if (unit === 'gm' || unit === 'g') return val / 1000;
+      if (unit === 'kg') return val;
+    } else if (pu === 'l') {
+      if (unit === 'ml') return val / 1000;
+      if (unit === 'l') return val;
+    }
+    return val;
+  };
+
+  const getProductUnit = () => {
+    if (product.unit) return product.unit;
+    const cat = (product.category || '').toLowerCase();
+    return cat.includes('oil') ? 'l' : 'kg';
+  };
+
+  // Returns 0 if not even 1 unit can be fulfilled, otherwise the max count
+  const getMaxQuantity = (sizeStr) => {
+    const available = Number(product?.available) || 0;
+    if (!sizeStr) return Math.floor(available); // no size selected
+    const pu = getProductUnit();
+    const needed = sizeToBaseUnits(sizeStr, pu);
+    if (needed <= 0) return 0;
+    return Math.floor(available / needed); // could be 0
+  };
+
+  const maxQty = getMaxQuantity(selectedSize);
+
   const handleAddToCart = () => {
 
     // Check if user is logged in
@@ -220,6 +257,24 @@ const ProductDetail = () => {
       });
       return;
     }
+
+    // Stock validation — maxQty=0 means even 1 unit exceeds stock
+    if (maxQty === 0) {
+      setToast({
+        type: 'error',
+        message: `Not enough stock for ${selectedSize || 'this item'}. Available: ${product.available} ${getProductUnit()}`
+      });
+      return;
+    }
+
+    if (quantity > maxQty) {
+      setToast({
+        type: 'error',
+        message: `Only ${maxQty} unit(s) of ${selectedSize} available (stock: ${product.available} ${getProductUnit()})`
+      });
+      return;
+    }
+
     // Create a product object with calculated price
     const productWithPrice = {
       ...product,
@@ -443,15 +498,30 @@ const ProductDetail = () => {
               <div className="size-selector">
                 <h4>Select Size:</h4>
                 <div className="size-options">
-                  {product.sizes.map((size, index) => (
-                    <button
-                      key={index}
-                      className={`size-option ${selectedSize === size ? 'active' : ''}`}
-                      onClick={() => setSelectedSize(size)}
-                    >
-                      {size}
-                    </button>
-                  ))}
+                  {product.sizes.map((size, index) => {
+                    const canFulfill = getMaxQuantity(size) > 0;
+                    return (
+                      <button
+                        key={index}
+                        className={`size-option ${selectedSize === size ? 'active' : ''} ${!canFulfill ? 'disabled-size' : ''}`}
+                        onClick={() => {
+                          if (!canFulfill) {
+                            setToast({
+                              type: 'error',
+                              message: `${size} is out of stock (available: ${product.available} ${getProductUnit()})`
+                            });
+                            return;
+                          }
+                          setSelectedSize(size);
+                          setQuantity(1); // reset qty when size changes
+                        }}
+                        title={!canFulfill ? 'Not enough stock' : ''}
+                      >
+                        {size}
+                        {!canFulfill && <span style={{ display: 'block', fontSize: '0.65rem', color: '#ef4444' }}>Out of stock</span>}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -468,14 +538,25 @@ const ProductDetail = () => {
               <div className="quantity-selector">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  disabled={!product.inStock}
+                  disabled={!product.inStock || maxQty === 0}
                 >
                   -
                 </button>
                 <span>{quantity}</span>
                 <button
-                  onClick={() => setQuantity(quantity + 1)}
-                  disabled={!product.inStock}
+                  onClick={() => {
+                    if (quantity >= maxQty) {
+                      setToast({
+                        type: 'error',
+                        message: maxQty === 0
+                          ? `${selectedSize || 'This size'} exceeds available stock (${product.available} ${getProductUnit()})`
+                          : `Only ${maxQty} unit(s) available in stock for this size`
+                      });
+                      return;
+                    }
+                    setQuantity(quantity + 1);
+                  }}
+                  disabled={!product.inStock || maxQty === 0 || quantity >= maxQty}
                 >
                   +
                 </button>
@@ -484,10 +565,13 @@ const ProductDetail = () => {
               <button
                 className={`add-to-cart-btn large ${isInCart ? 'in-cart' : ''}`}
                 onClick={handleAddToCart}
-                disabled={!product.inStock}
+                disabled={!product.inStock || maxQty === 0}
+                title={maxQty === 0 && selectedSize ? `Not enough stock for ${selectedSize}` : ''}
               >
                 <ShoppingCart size={20} />
-                {isInCart ? 'Added to Cart' : 'Add to Cart'}
+                {maxQty === 0 && selectedSize
+                  ? 'Insufficient Stock'
+                  : isInCart ? 'Added to Cart' : 'Add to Cart'}
               </button>
 
               <button

@@ -1,10 +1,48 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { Trash2, Plus, Minus, ShoppingBag, ArrowRight } from 'lucide-react';
+import Toast from '../components/Toast';
+
+// Helper: compute max units of a given size that fit in available stock
+// Returns 0 if not even 1 unit can be fulfilled
+const computeMaxQty = (item) => {
+  const available = Number(item.available);
+  if (!available || available <= 0) return 0;
+
+  const sizeStr = item.selectedSize;
+  if (!sizeStr) return Math.floor(available);
+
+  const sizeMatch = sizeStr.match(/^([\d.]+)\s*(kg|gm|g|l|ml)$/i);
+  if (!sizeMatch) return Math.floor(available);
+
+  const sizeValue = parseFloat(sizeMatch[1]);
+  const sizeUnit = sizeMatch[2].toLowerCase();
+
+  let productUnit = item.unit;
+  if (!productUnit) {
+    const category = (item.category || '').toLowerCase();
+    productUnit = category.includes('oil') ? 'l' : 'kg';
+  }
+  productUnit = productUnit.toLowerCase();
+
+  let sizeInBaseUnit = sizeValue;
+  if (productUnit === 'kg') {
+    if (sizeUnit === 'gm' || sizeUnit === 'g') sizeInBaseUnit = sizeValue / 1000;
+    else if (sizeUnit === 'kg') sizeInBaseUnit = sizeValue;
+  } else if (productUnit === 'l') {
+    if (sizeUnit === 'ml') sizeInBaseUnit = sizeValue / 1000;
+    else if (sizeUnit === 'l') sizeInBaseUnit = sizeValue;
+  }
+
+  if (sizeInBaseUnit <= 0) return 0;
+  return Math.floor(available / sizeInBaseUnit); // can be 0 — correctly blocks the item
+};
 
 const Cart = () => {
   const navigate = useNavigate();
   const { cartItems, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart();
+  const [toast, setToast] = useState(null);
 
   const handleCheckout = () => {
     // Check if user is logged in
@@ -86,7 +124,18 @@ const Cart = () => {
                     </button>
                     <span>{item.quantity}</span>
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      onClick={() => {
+                        const maxQty = computeMaxQty(item);
+                        if (item.quantity >= maxQty) {
+                          setToast({
+                            type: 'error',
+                            message: `Only ${maxQty} unit(s) available in stock`
+                          });
+                          return;
+                        }
+                        updateQuantity(item.id, item.quantity + 1);
+                      }}
+                      disabled={item.quantity >= computeMaxQty(item)}
                       aria-label="Increase quantity"
                     >
                       <Plus size={16} />
@@ -158,6 +207,13 @@ const Cart = () => {
           </div>
         </div>
       </div>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

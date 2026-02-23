@@ -139,13 +139,76 @@ const Checkout = () => {
         setLoading(true);
 
         try {
+            // ── Stock validation (live check before order is committed) ──
+            const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://fresh-flow-fa56.onrender.com';
+
+            // Helper: get how many base-units a cart item consumes per 1 qty
+            const sizeToBaseUnit = (item) => {
+                if (!item.selectedSize) return 1;
+                const sizeMatch = String(item.selectedSize).match(/^([\d.]+)\s*(kg|gm|g|l|ml)$/i);
+                if (!sizeMatch) return 1;
+                const sizeValue = parseFloat(sizeMatch[1]);
+                const sizeUnit = sizeMatch[2].toLowerCase();
+                let productUnit = item.unit || '';
+                if (!productUnit) {
+                    const cat = (item.category || '').toLowerCase();
+                    productUnit = cat.includes('oil') ? 'l' : 'kg';
+                }
+                productUnit = productUnit.toLowerCase();
+                if (productUnit === 'kg') {
+                    if (sizeUnit === 'gm' || sizeUnit === 'g') return sizeValue / 1000;
+                    if (sizeUnit === 'kg') return sizeValue;
+                } else if (productUnit === 'l') {
+                    if (sizeUnit === 'ml') return sizeValue / 1000;
+                    if (sizeUnit === 'l') return sizeValue;
+                }
+                return 1;
+            };
+
+            let stockErrors = [];
+            try {
+                const stockRes = await fetch(`${API_BASE_URL}/api/data/products`);
+                if (stockRes.ok) {
+                    const stockData = await stockRes.json();
+                    const products = stockData.data || [];
+
+                    for (const item of cartItems) {
+                        // Find matching product (numeric or string id)
+                        const prod = products.find(p =>
+                            String(p.id) === String(item.id) ||
+                            p.docId === String(item.id)
+                        );
+                        if (!prod) continue;
+
+                        const available = Number(prod.available) || 0;
+                        const needed = sizeToBaseUnit(item) * item.quantity;
+
+                        if (needed > available) {
+                            const availableLabel = available <= 0
+                                ? 'out of stock'
+                                : `only ${available} ${prod.unit || 'units'} left`;
+                            stockErrors.push(`"${item.name}" — ${availableLabel}`);
+                        }
+                    }
+                }
+            } catch (stockCheckErr) {
+                console.warn('Stock check failed, continuing with order:', stockCheckErr);
+            }
+
+            if (stockErrors.length > 0) {
+                setToast({
+                    message: `Cannot place order. Insufficient stock for: ${stockErrors.join(', ')}`,
+                    type: 'error'
+                });
+                setLoading(false);
+                return;
+            }
+            // ── End stock validation ──
+
             // Calculate order totals
             const subtotal = getCartTotal();
             const deliveryCharge = subtotal >= 500 ? 0 : 50;
             const total = subtotal + deliveryCharge;
-
-            // Define API URL for backend requests
-            const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://fresh-flow-fa56.onrender.com';
 
             // Prepare order data for Firebase
             const orderData = {
