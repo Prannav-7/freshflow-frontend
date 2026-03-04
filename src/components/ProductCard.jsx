@@ -88,9 +88,9 @@ const ProductCard = ({ product }) => {
 
               const unitLower = unit.toLowerCase();
               if (unitLower === 'kg')
-                return `${(product.available * 1000).toFixed(0)} gm (${product.available} kg)`;
+                return `${product.available} kg (${(product.available * 1000).toFixed(0)} gm)`;
               else if (unitLower === 'l')
-                return `${(product.available * 1000).toFixed(0)} ml (${product.available} L)`;
+                return `${product.available} L (${(product.available * 1000).toFixed(0)} ml)`;
               else
                 return `${product.available} ${unit}`;
             })()}
