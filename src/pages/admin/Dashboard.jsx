@@ -106,7 +106,7 @@ const Dashboard = () => {
                 if (lowStock.length > 0) {
                     if (message) message += '\n\n';
                     message += `⚠️ ${lowStock.length} product(s) are RUNNING LOW (< 10 items)!\n`;
-                    message += `Products: ${lowStock.slice(0, 3).map(p => `${p.name} (${p.available})`).join(', ')}`;
+                    message += `Products: ${lowStock.slice(0, 3).map(p => `${p.name} (${parseFloat(Number(p.available).toFixed(2))})`).join(', ')}`;
                     if (lowStock.length > 3) message += ` and ${lowStock.length - 3} more`;
                 }
                 setLowStockMessage(message);

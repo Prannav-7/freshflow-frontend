@@ -176,7 +176,7 @@ const ProductManagement = () => {
             image: product.image,
             description: product.description || '',
             inStock: product.inStock !== false,
-            available: product.available || 0,
+            available: parseFloat(Number(product.available || 0).toFixed(2)),
             sizes: Array.isArray(product.sizes) ? product.sizes.join(', ') : '',
             unit: product.unit || 'kg' // Include unit when editing
         });
@@ -282,7 +282,7 @@ const ProductManagement = () => {
                                     <td>{product.category}</td>
                                     <td className="price-cell">₹{product.price}</td>
                                     <td>
-                                        {product.available || 0}{' '}
+                                        {parseFloat(Number(product.available || 0).toFixed(2))}{' '}
                                         {(() => {
                                             let unit = product.unit;
                                             if (!unit) {

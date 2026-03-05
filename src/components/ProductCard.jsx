@@ -87,12 +87,13 @@ const ProductCard = ({ product }) => {
               }
 
               const unitLower = unit.toLowerCase();
+              const avail = parseFloat(Number(product.available).toFixed(2));
               if (unitLower === 'kg')
-                return `${product.available} kg (${(product.available * 1000).toFixed(0)} gm)`;
+                return `${avail} kg (${(product.available * 1000).toFixed(0)} gm)`;
               else if (unitLower === 'l')
-                return `${product.available} L (${(product.available * 1000).toFixed(0)} ml)`;
+                return `${avail} L (${(product.available * 1000).toFixed(0)} ml)`;
               else
-                return `${product.available} ${unit}`;
+                return `${avail} ${unit}`;
             })()}
           </div>
         )}

@@ -24,7 +24,7 @@ const formatWeight = (grams, unitHint = 'kg') => {
   const isVolume = /ml|l/i.test(unitHint);
   if (grams >= 1000) {
     const val = grams / 1000;
-    const formattedVal = val % 1 === 0 ? val : val.toFixed(1);
+    const formattedVal = val % 1 === 0 ? val : parseFloat(val.toFixed(2));
     return `${formattedVal}${isVolume ? 'L' : 'kg'}`;
   }
   return `${Math.round(grams)}${isVolume ? 'ml' : 'g'}`;
