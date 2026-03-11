@@ -53,7 +53,7 @@ const Invoice = ({ order, onClose }) => {
                         <div className="company-info">
                             <h1>🌿 Fresh Flow</h1>
                             <p>Premium Organic Products</p>
-                            <p>15-A, Kamaraj Salai, Anna Nagar, Chennai - 600040, Tamil Nadu</p>
+                            <p>51-A, SORIYAMPALAYAM, VAZHAITHOTTAM (Po), SIVAGIRI - 638109, ERODE (Dt)</p>
                             <p>Email:info.iyarkaivalari@gmail.com | Phone: +91 9976238446</p>
                         </div>
                         <div className="invoice-meta">
