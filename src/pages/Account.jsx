@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { User, Mail, Shield, Calendar, LogOut, ShoppingBag, Heart } from 'lucide-react';
+import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import './Account.css';
 
 const Account = () => {
-    const navigate = useNavigate();
-    const [user, setUser] = useState(null);
+    const { clearCart } = useCart();
+    const { clearWishlist } = useWishlist();
 
     useEffect(() => {
         // Check if user is logged in
@@ -20,6 +22,8 @@ const Account = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('user');
+        clearCart();
+        clearWishlist();
         setUser(null);
         navigate('/login');
     };

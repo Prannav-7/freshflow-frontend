@@ -403,18 +403,18 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(231, 111, 81, 0.2);
-  border: 1px solid rgba(231, 111, 81, 0.5);
+  background: rgba(174, 32, 18, 0.1);
+  border: 1px solid rgba(174, 32, 18, 0.3);
   color: white;
   padding: 6px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.3s;
 }
 
 .logout-btn:hover {
-  background: var(--accent-color);
-  border-color: var(--accent-color);
+  background: var(--danger);
+  border-color: var(--danger);
   transform: scale(1.05);
 }
 
@@ -481,13 +481,13 @@ body {
 }
 
 .admin-nav-link {
-  background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+  background: linear-gradient(135deg, var(--warning) 0%, var(--accent-color) 100%);
   color: white !important;
   padding: 8px 16px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-weight: 600;
   transition: all 0.3s;
-  box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
+  box-shadow: 0 2px 8px rgba(221, 161, 94, 0.3);
 }
 
 .admin-nav-link:hover {

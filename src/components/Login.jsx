@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { signInWithPopup, getAdditionalUserInfo } from 'firebase/auth';
 import { auth, googleProvider } from '../firebaseConfig';
+import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import Toast from './Toast';
 import './Login.css';
 
@@ -11,6 +13,8 @@ const API_URL = `${API_BASE_URL}/api/auth`;
 
 export default function Login() {
     const navigate = useNavigate();
+    const { clearCart } = useCart();
+    const { clearWishlist } = useWishlist();
     const [isSignUp, setIsSignUp] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -224,6 +228,8 @@ export default function Login() {
     const handleSignOut = async () => {
         try {
             await fetch(`${API_URL}/signout`, { method: 'POST' });
+            clearCart();
+            clearWishlist();
             setUser(null);
             localStorage.removeItem('user');
             setToast({ type: 'success', message: 'Signed out successfully. Come back soon!' });

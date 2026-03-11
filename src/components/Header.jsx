@@ -5,8 +5,8 @@ import { useWishlist } from '../context/WishlistContext';
 import { useState, useEffect, useRef } from 'react';
 
 const Header = ({ onSearch }) => {
-  const { getCartCount } = useCart();
-  const { getWishlistCount } = useWishlist();
+  const { clearCart, getCartCount } = useCart();
+  const { clearWishlist, getWishlistCount } = useWishlist();
   const [searchQuery, setSearchQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
@@ -25,6 +25,10 @@ const Header = ({ onSearch }) => {
     const handleStorageChange = () => {
       const savedUser = localStorage.getItem('user');
       setUser(savedUser ? JSON.parse(savedUser) : null);
+      if (!savedUser) {
+        clearCart();
+        clearWishlist();
+      }
     };
 
     // Listen for custom login event (same tab)
@@ -39,7 +43,7 @@ const Header = ({ onSearch }) => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('userLoggedIn', handleLoginEvent);
     };
-  }, []);
+  }, [clearCart, clearWishlist]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -80,6 +84,8 @@ const Header = ({ onSearch }) => {
 
   const handleLogout = () => {
     localStorage.removeItem('user');
+    clearCart();
+    clearWishlist();
     setUser(null);
     setProfileDropdownOpen(false);
     window.location.href = '/';

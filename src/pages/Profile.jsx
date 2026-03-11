@@ -2,10 +2,14 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { User, Package, Lock, MapPin, LogOut, Edit2, Save, X, Eye, EyeOff } from 'lucide-react';
 import './Profile.css';
+import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import { getOrders, updateUserProfile as updateProfileAPI, changePassword as changePasswordAPI } from '../api';
 
 const Profile = () => {
     const navigate = useNavigate();
+    const { clearCart } = useCart();
+    const { clearWishlist } = useWishlist();
     const [user, setUser] = useState(null);
     const [orders, setOrders] = useState([]);
     const [activeTab, setActiveTab] = useState('personal');
@@ -141,6 +145,8 @@ const Profile = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('user');
+        clearCart();
+        clearWishlist();
         navigate('/');
     };
 
