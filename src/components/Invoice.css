@@ -23,13 +23,13 @@
 
 .invoice-container {
     position: relative;
-    background: white;
-    width: 90%;
+    background: var(--bg-white);
+    width: 95%;
     max-width: 900px;
     max-height: 90vh;
     overflow-y: auto;
-    border-radius: 12px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
     z-index: 1;
 }
 
@@ -99,8 +99,10 @@
 
 /* Compact Invoice Content - Designed for 2 pages max */
 .invoice-content {
-    padding: 1.2rem;
-    background: white;
+    padding: 2rem;
+    background: #fff;
+    background-image: radial-gradient(var(--bg-light) 0.5px, transparent 0.5px);
+    background-size: 20px 20px;
     font-size: 0.9rem;
 }
 
@@ -156,9 +158,10 @@
 .address-section h3 {
     color: var(--primary-color);
     font-size: 0.95rem;
-    margin-bottom: 0.4rem;
-    padding-bottom: 0.2rem;
-    border-bottom: 1px solid var(--primary-color);
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 2px solid var(--primary-light);
+    display: inline-block;
 }
 
 .address-section p {

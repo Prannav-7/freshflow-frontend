@@ -1,6 +1,6 @@
 .order-detail-page {
     min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--bg-light) 0%, #ede7da 100%);
     padding: 2rem 0;
 }
 
@@ -12,7 +12,7 @@
 
 /* Header */
 .order-detail-page {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--bg-light) 0%, #ede7da 100%);
     min-height: 100vh;
     padding: 2rem 0;
 }
@@ -252,7 +252,7 @@
 
 .item-price {
     font-size: 1rem;
-    color: #667eea;
+    color: var(--primary-color);
     font-weight: 600;
     margin: 0.25rem 0 0 0;
 }
@@ -352,10 +352,10 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background: #667eea;
+    background: var(--primary-color);
     color: white;
     padding: 0.75rem 1.5rem;
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
     text-decoration: none;
     font-weight: 600;
     transition: all 0.3s ease;

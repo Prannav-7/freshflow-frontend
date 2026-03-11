@@ -11,9 +11,9 @@
 
 .track-header h1 {
     font-size: 2.5rem;
-    color: #1f2937;
+    color: var(--text-primary);
     margin-bottom: 10px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -41,7 +41,7 @@
 }
 
 .search-box:focus-within {
-    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 15px 35px rgba(26, 77, 46, 0.15);
 }
 
 .search-box svg {
@@ -63,7 +63,7 @@
 }
 
 .track-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
     color: white;
     border: none;
     padding: 12px 30px;
@@ -76,7 +76,7 @@
 
 .track-btn:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 5px 15px rgba(26, 77, 46, 0.3);
 }
 
 .track-btn:disabled {
@@ -385,7 +385,7 @@
 }
 
 .summary-row.total strong {
-    color: #10b981;
+    color: var(--primary-color);
     font-size: 1.3rem;
 }
 
@@ -452,14 +452,14 @@
 .item-price {
     font-size: 1.2rem;
     font-weight: 600;
-    color: #10b981;
+    color: var(--primary-color);
 }
 
 /* Help Section */
 .help-section {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
     color: white;
-    border-radius: 16px;
+    border-radius: var(--radius-lg);
     padding: 30px;
     text-align: center;
 }
@@ -489,7 +489,7 @@
     transition: all 0.3s ease;
     border: 2px solid white;
     background: white;
-    color: #667eea;
+    color: var(--primary-color);
     cursor: pointer;
 }
 
