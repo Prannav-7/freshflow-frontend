@@ -90,73 +90,101 @@ const Cart = () => {
 
         <div className="cart-content">
           <div className="cart-items">
-            {cartItems.map(item => (
-              <div key={String(item.id)} className="cart-item">
-                <Link to={`/product/${item.id}`} className="cart-item-image">
-                  <img src={item.image} alt={item.name} />
-                </Link>
+            {/* Group items by Product ID */}
+            {(() => {
+              const grouped = cartItems.reduce((acc, item) => {
+                const id = String(item.id);
+                if (!acc[id]) {
+                  acc[id] = {
+                    ...item,
+                    variations: []
+                  };
+                }
+                acc[id].variations.push(item);
+                return acc;
+              }, {});
 
-                <div className="cart-item-info">
-                  <Link to={`/product/${item.id}`}>
-                    <h3>{item.name}</h3>
-                  </Link>
-                  <p className="cart-item-brand">{item.brand}</p>
-                  {item.selectedSize && (
-                    <p className="cart-item-size" style={{ color: '#22c55e', fontWeight: '500', fontSize: '0.9rem' }}>
-                      Size: {item.selectedSize}
-                    </p>
-                  )}
-                  <div className="cart-item-price">
-                    <span className="current-price">₹{item.price}</span>
-                    {item.originalPrice > item.price && (
-                      <span className="original-price">₹{item.originalPrice}</span>
-                    )}
+              return Object.values(grouped).map(product => (
+                <div key={product.id} className="cart-item-grouped">
+                  <div className="grouped-item-main">
+                    <Link to={`/product/${product.id}`} className="cart-item-image">
+                      <img src={product.image} alt={product.name} />
+                    </Link>
+
+                    <div className="cart-item-info">
+                      <Link to={`/product/${product.id}`}>
+                        <h3>{product.name}</h3>
+                      </Link>
+                      <p className="cart-item-brand">{product.brand}</p>
+                    </div>
+                  </div>
+
+                  <div className="cart-item-variations">
+                    {product.variations.map(variation => (
+                      <div key={variation.selectedSize || 'default'} className="variation-row">
+                        <div className="variation-details">
+                          <span className="variation-size">Size: {variation.selectedSize || 'Standard'}</span>
+                          <span className="variation-unit-price">₹{variation.price}</span>
+                        </div>
+
+                        <div className="variation-controls">
+                          <div className="quantity-control small">
+                            <button
+                              onClick={() => {
+                                if (variation.quantity > 1) {
+                                  updateQuantity(variation.id, variation.quantity - 1, variation.selectedSize);
+                                } else {
+                                  removeFromCart(variation.id, variation.selectedSize);
+                                }
+                              }}
+                              aria-label="Decrease quantity"
+                            >
+                              <Minus size={14} />
+                            </button>
+                            <span>{variation.quantity}</span>
+                            <button
+                              onClick={() => {
+                                const maxQty = computeMaxQty(variation);
+                                if (variation.quantity >= maxQty) {
+                                  setToast({
+                                    type: 'error',
+                                    message: `Only ${maxQty} unit(s) available in stock`
+                                  });
+                                  return;
+                                }
+                                updateQuantity(variation.id, variation.quantity + 1, variation.selectedSize);
+                              }}
+                              disabled={variation.quantity >= computeMaxQty(variation)}
+                              aria-label="Increase quantity"
+                            >
+                              <Plus size={14} />
+                            </button>
+                          </div>
+
+                          <div className="variation-total">
+                            ₹{variation.price * variation.quantity}
+                          </div>
+
+                          <button
+                            className="remove-variation-btn"
+                            onClick={() => {
+                              removeFromCart(variation.id, variation.selectedSize);
+                              setToast({
+                                type: 'success',
+                                message: `Removed ${variation.selectedSize || 'item'} from cart.`
+                              });
+                            }}
+                            title="Remove this size"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-
-                <div className="cart-item-actions">
-                  <div className="quantity-control">
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      aria-label="Decrease quantity"
-                    >
-                      <Minus size={16} />
-                    </button>
-                    <span>{item.quantity}</span>
-                    <button
-                      onClick={() => {
-                        const maxQty = computeMaxQty(item);
-                        if (item.quantity >= maxQty) {
-                          setToast({
-                            type: 'error',
-                            message: `Only ${maxQty} unit(s) available in stock`
-                          });
-                          return;
-                        }
-                        updateQuantity(item.id, item.quantity + 1);
-                      }}
-                      disabled={item.quantity >= computeMaxQty(item)}
-                      aria-label="Increase quantity"
-                    >
-                      <Plus size={16} />
-                    </button>
-                  </div>
-
-                  <div className="cart-item-total">
-                    ₹{item.price * item.quantity}
-                  </div>
-
-                  <button
-                    className="remove-btn cart-remove-btn"
-                    onClick={() => removeFromCart(item.id)}
-                    aria-label="Remove item"
-                  >
-                    <Trash2 size={18} />
-                    <span>Remove</span>
-                  </button>
-                </div>
-              </div>
-            ))}
+              ));
+            })()}
 
             <button className="clear-cart-btn" onClick={clearCart}>
               Clear Cart

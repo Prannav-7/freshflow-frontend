@@ -126,6 +126,91 @@ const Checkout = () => {
         }
     };
 
+    const handleRazorpayPayment = async (totalAmount) => {
+        const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        
+        try {
+            // 1. Create order on backend
+            const response = await fetch(`${API_BASE_URL}/api/payment/create-order`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    amount: totalAmount,
+                    currency: 'INR',
+                    receipt: `receipt_${Date.now()}`
+                })
+            });
+
+            const order = await response.json();
+
+            if (!order.success) {
+                setToast({ message: 'Error creating Razorpay order', type: 'error' });
+                return null;
+            }
+
+            // 2. Open Razorpay Checkout
+            return new Promise((resolve) => {
+                const options = {
+                    key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+                    amount: order.amount,
+                    currency: order.currency,
+                    name: "FreshFlow",
+                    description: "Organic Product Purchase",
+                    order_id: order.orderId,
+                    handler: async (response) => {
+                        // 3. Verify payment on backend
+                        try {
+                            const verifyResponse = await fetch(`${API_BASE_URL}/api/payment/verify-payment`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    razorpay_order_id: response.razorpay_order_id,
+                                    razorpay_payment_id: response.razorpay_payment_id,
+                                    razorpay_signature: response.razorpay_signature
+                                })
+                            });
+
+                            const verifyResult = await verifyResponse.json();
+                            if (verifyResult.success) {
+                                resolve({
+                                    ...response,
+                                    success: true
+                                });
+                            } else {
+                                setToast({ message: 'Payment verification failed', type: 'error' });
+                                resolve(null);
+                            }
+                        } catch (err) {
+                            console.error('Verification Error:', err);
+                            setToast({ message: 'Error verifying payment', type: 'error' });
+                            resolve(null);
+                        }
+                    },
+                    prefill: {
+                        name: formData.fullName,
+                        email: formData.email,
+                        contact: formData.phone
+                    },
+                    theme: {
+                        color: "#22c55e"
+                    },
+                    modal: {
+                        ondismiss: () => {
+                            resolve(null);
+                        }
+                    }
+                };
+
+                const rzp = new window.Razorpay(options);
+                rzp.open();
+            });
+        } catch (error) {
+            console.error('Razorpay Error:', error);
+            setToast({ message: 'Payment gateway error', type: 'error' });
+            return null;
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -210,6 +295,17 @@ const Checkout = () => {
             const deliveryCharge = subtotal >= 500 ? 0 : 50;
             const total = subtotal + deliveryCharge;
 
+            let paymentDetails = null;
+
+            // Handle Online Payment via Razorpay
+            if (formData.paymentMethod === 'online') {
+                paymentDetails = await handleRazorpayPayment(total);
+                if (!paymentDetails) {
+                    setLoading(false);
+                    return; // Payment failed or cancelled
+                }
+            }
+
             // Prepare order data for Firebase
             const orderData = {
                 userId: user.uid,
@@ -233,10 +329,12 @@ const Checkout = () => {
                     pincode: formData.pincode
                 },
                 paymentMethod: formData.paymentMethod,
+                paymentId: paymentDetails ? paymentDetails.razorpay_payment_id : null,
+                razorpayOrderId: paymentDetails ? paymentDetails.razorpay_order_id : null,
                 subtotal: subtotal,
                 deliveryCharge: deliveryCharge,
                 totalAmount: total,
-                status: 'pending',
+                status: formData.paymentMethod === 'online' ? 'paid' : 'pending',
                 orderDate: new Date().toISOString(),
                 createdAt: new Date().toISOString()
             };

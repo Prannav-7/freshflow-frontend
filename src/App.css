@@ -2729,3 +2729,135 @@ body {
     width: 100%;
   }
 }
+
+/* Grouped Cart Styles */
+.cart-item-grouped {
+  background: white;
+  border-radius: var(--radius-md);
+  margin-bottom: 24px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+}
+
+.grouped-item-main {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  background: var(--bg-light);
+  border-bottom: 1px solid var(--border-color);
+  gap: 20px;
+}
+
+.grouped-item-main .cart-item-image {
+  width: 80px;
+  height: 80px;
+}
+
+.grouped-item-main .cart-item-info {
+  flex: 1;
+}
+
+.grouped-item-main h3 {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.cart-item-variations {
+  padding: 10px 0;
+}
+
+.variation-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.variation-row:last-child {
+  border-bottom: none;
+}
+
+.variation-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 120px;
+}
+
+.variation-size {
+  font-weight: 600;
+  color: var(--primary-color);
+  font-size: 15px;
+}
+
+.variation-unit-price {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.variation-controls {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.quantity-control.small {
+  padding: 4px 8px;
+  gap: 8px;
+  background: var(--bg-light);
+  border-radius: 6px;
+}
+
+.quantity-control.small button {
+  width: 24px;
+  height: 24px;
+  background: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.variation-total {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 80px;
+  text-align: right;
+}
+
+.remove-variation-btn {
+  background: none;
+  border: none;
+  color: var(--danger);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.remove-variation-btn:hover {
+  background: rgba(174, 32, 18, 0.1);
+  transform: scale(1.1);
+}
+
+@media (max-width: 600px) {
+  .variation-row {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  
+  .variation-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

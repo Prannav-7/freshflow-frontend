@@ -43,55 +43,41 @@ export const CartProvider = ({ children }) => {
   const addToCart = (product, quantity = 1, selectedSize = null) => {
     setCartItems(prev => {
       const productId = String(product.id);
-      const existingItemIndex = prev.findIndex(item => String(item.id) === productId);
+      // Find item with same ID AND same Size
+      const existingItemIndex = prev.findIndex(item => 
+        String(item.id) === productId && item.selectedSize === selectedSize
+      );
 
       if (existingItemIndex !== -1) {
-        const existingItem = prev[existingItemIndex];
         const newCartItems = [...prev];
-
-        // If both have sizes, merge them into a single weight entry
-        if (existingItem.selectedSize && selectedSize) {
-          const existingWeight = parseWeight(existingItem.selectedSize);
-          const newWeight = parseWeight(selectedSize);
-
-          const totalWeightBase = (existingWeight * existingItem.quantity) + (newWeight * quantity);
-          const totalPrice = (existingItem.price * existingItem.quantity) + (product.price * quantity);
-
-          newCartItems[existingItemIndex] = {
-            ...existingItem,
-            selectedSize: formatWeight(totalWeightBase, selectedSize),
-            price: totalPrice,
-            quantity: 1 // Reset to 1 as we've merged the totals into the unit price/size
-          };
-        } else {
-          // Fallback for items without sizes or missing size info
-          newCartItems[existingItemIndex] = {
-            ...existingItem,
-            quantity: existingItem.quantity + quantity
-          };
-        }
+        newCartItems[existingItemIndex] = {
+          ...prev[existingItemIndex],
+          quantity: prev[existingItemIndex].quantity + quantity
+        };
         return newCartItems;
       }
 
-      // Add new item
+      // Add new item with specific size
       return [...prev, { ...product, quantity, selectedSize }];
     });
   };
 
-  const removeFromCart = (productId) => {
+  const removeFromCart = (productId, selectedSize = null) => {
     const pId = String(productId);
-    setCartItems(prev => prev.filter(item => String(item.id) !== pId));
+    setCartItems(prev => prev.filter(item => 
+      !(String(item.id) === pId && item.selectedSize === selectedSize)
+    ));
   };
 
-  const updateQuantity = (productId, quantity) => {
+  const updateQuantity = (productId, quantity, selectedSize = null) => {
     if (quantity <= 0) {
-      removeFromCart(productId);
+      removeFromCart(productId, selectedSize);
       return;
     }
     const pId = String(productId);
     setCartItems(prev =>
       prev.map(item =>
-        (String(item.id) === pId)
+        (String(item.id) === pId && item.selectedSize === selectedSize)
           ? { ...item, quantity }
           : item
       )
