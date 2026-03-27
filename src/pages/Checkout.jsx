@@ -126,10 +126,33 @@ const Checkout = () => {
         }
     };
 
+    const loadRazorpayScript = () => {
+        return new Promise((resolve) => {
+            const script = document.createElement('script');
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            script.onload = () => {
+                resolve(true);
+            };
+            script.onerror = () => {
+                resolve(false);
+            };
+            document.body.appendChild(script);
+        });
+    };
+
     const handleRazorpayPayment = async (totalAmount) => {
         const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
         
         try {
+            // Check if Razorpay is loaded, if not load it dynamically
+            if (!window.Razorpay) {
+                const res = await loadRazorpayScript();
+                if (!res) {
+                    setToast({ message: 'Razorpay SDK failed to load. Check your internet connection.', type: 'error' });
+                    return null;
+                }
+            }
+
             // 1. Create order on backend
             const response = await fetch(`${API_BASE_URL}/api/payment/create-order`, {
                 method: 'POST',
